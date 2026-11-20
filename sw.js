@@ -1,9 +1,9 @@
 /* Gestão de Cuidadoras — service worker.
    Guarda a app no aparelho para abrir depressa. Os DADOS não passam por aqui: vão sempre para o Firebase. */
-const VERSAO = 'gc-2026-11-20h';
+const VERSAO = 'gc-2026-11-20i';
 const BASE = ['./', './index.html', './firebase-config.js', './manifest.webmanifest',
   './icones/icone-192.png', './icones/icone-512.png', './icones/apple-touch-icon.png'];
-const EXTERNOS = ['https://www.gstatic.com/firebasejs/', 'https://cdnjs.cloudflare.com/ajax/libs/'];
+const EXTERNOS = ['https://www.gstatic.com/firebasejs/', 'https://cdn.jsdelivr.net/npm/'];
 /* bibliotecas guardadas logo na instalação, para a app abrir sem internet */
 const LIBS = ['app', 'auth', 'firestore'].map(n => 'https://www.gstatic.com/firebasejs/10.14.1/firebase-' + n + '-compat.js');
 

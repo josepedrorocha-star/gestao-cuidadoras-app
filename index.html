@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-PT"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Gestão de Cuidadoras</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icones/icone-192.png">
@@ -12,7 +12,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-</head><body>
 <style>
 :root{
   --bg:#f6f3ee; --card:#ffffff; --ink:#22201c; --mute:#6f6a62; --line:#e4ded4;
@@ -42,7 +41,6 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .top{max-width:1200px;margin:0 auto;padding:8px 16px 4px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
 h1{font-size:16px;margin:0;font-weight:700;letter-spacing:-.01em;display:flex;align-items:baseline;gap:10px;flex-wrap:nowrap;white-space:nowrap}
 h1 .estado{font-size:12px;font-weight:600;width:auto}
-h1 small{display:block;font-size:12px;color:var(--mute);font-weight:500}
 .mesnav{display:flex;align-items:center;gap:6px;margin-left:auto}
 .mesnav .mes{min-width:150px;display:inline-flex;align-items:center;justify-content:center;gap:12px;font-weight:700;font-size:17px;padding:0 10px;white-space:nowrap}
 .mesnav .mes .mt{flex:none}
@@ -51,7 +49,6 @@ h1 small{display:block;font-size:12px;color:var(--mute);font-weight:500}
 .tema button{border:0;background:none;padding:6px 9px;cursor:pointer;font-size:13px;font-weight:600;color:var(--mute)}
 .tema button.on{background:var(--acc);color:#fff}
 .estado{font-size:12px;color:var(--mute);width:100%}
-.ficheiro{display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:420px}
 .estado.aviso{color:var(--red)}
 nav{max-width:1200px;margin:0 auto;padding:0 16px;display:flex;gap:4px;overflow-x:auto}
 nav button{border:0;background:none;padding:9px 12px;border-bottom:3px solid transparent;cursor:pointer;color:var(--mute);font-weight:600;white-space:nowrap}
@@ -64,13 +61,11 @@ main{max-width:1200px;margin:0 auto;padding:16px 16px 60px}
 .btn.s{padding:4px 9px;font-size:13px}
 .btn.i{padding:5px 10px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
-.grid{display:grid;gap:14px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
 .kpi .l{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
 .kpi .v{font-size:22px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
 .pos{color:var(--green)} .neg{color:var(--red)}
 h2{font-size:16px;margin:22px 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-h2 .sp{flex:1}
 .mute{color:var(--mute)} .small{font-size:13px}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 input[type=text],input[type=number],input[type=date],input[type=time],input[type=tel],input[type=email],select,textarea{
@@ -134,7 +129,6 @@ tr.sub td{font-size:14px;font-weight:600}
 .chip.pg{opacity:.85} .chip .ck{color:var(--green);margin-right:3px}
 .notas-mes textarea{min-height:64px;background:var(--nota);border-color:var(--notab)}
 @media print{.notas-mes textarea{border:0;background:none;resize:none}}
-details.horarios summary{cursor:pointer;list-style:revert}
 tr.diasep td{background:var(--bg);font-size:12px;font-weight:700;color:var(--mute);padding:5px 8px;border-top:2px solid var(--line);border-bottom:1px solid var(--line);text-transform:capitalize}
 tr.diasep .bdg{text-transform:uppercase}
 .chip.aj{border-left-style:dotted;background:color-mix(in srgb,var(--c) 8%,var(--card));font-style:italic}
@@ -154,7 +148,13 @@ tr.diasep .bdg{text-transform:uppercase}
 .calc{font-size:12.5px;color:var(--mute);background:var(--bg);border-radius:8px;padding:6px 8px}
 /* modal */
 #modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-start;justify-content:center;padding:40px 12px;z-index:50;overflow:auto}
-#modal.on{display:flex}
+#modal.on,#modal2.on{display:flex}
+#modal2{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:60px 12px;z-index:55;overflow:auto}
+#modal2 .box{background:var(--card);border-radius:14px;max-width:520px;width:100%;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.3)}#modal2 h3{margin:0 0 6px}
+.toast.acao{display:flex;align-items:center;gap:12px;pointer-events:none;bottom:calc(18px + env(safe-area-inset-bottom,0px))}.toast.acao button{border:0;background:none;color:var(--acc2);font-weight:800;cursor:pointer;padding:4px 2px;text-decoration:underline;font-size:14px}
+/* só apanha toques enquanto está visível */
+.toast.acao.on{pointer-events:auto}
+#erroBox{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top,0px));z-index:70;display:none;align-items:center;gap:12px;max-width:calc(100% - 24px);background:var(--red2);color:var(--red);border:1px solid var(--red);border-radius:12px;padding:10px 14px;font-weight:600;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.18)}#erroBox.on{display:flex}
 #modal .box{background:var(--card);border-radius:14px;max-width:520px;width:100%;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
 #modal h3{margin:0 0 4px}
 .turno{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
@@ -208,12 +208,10 @@ table.enc th,table.enc td{vertical-align:top} table.enc td:last-child{font-size:
 .tog{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-shrink:0}
 .tog button{border:0;background:var(--card);padding:6px 12px;font-weight:700;font-size:13px;color:var(--mute);cursor:pointer}
 .tog button.on{background:var(--acc);color:#fff}
-.aima-box{border-radius:10px;padding:10px 12px;border-left:4px solid var(--pos,#2f7d4f);background:var(--acc2)}
+.aima-box{border-radius:10px;padding:10px 12px;border-left:4px solid var(--green);background:var(--acc2)}
 .aima-box.no{border-left-color:var(--red);background:rgba(200,60,50,.1)}
 .aima-box .small{margin-top:4px;color:var(--ink);font-weight:400}
 .ss-col{display:flex;flex-direction:column;gap:14px;min-width:0}
-.ss-top{justify-content:space-between;margin-bottom:12px;gap:10px}
-@media (max-width:760px){.ss-top{flex-direction:column;align-items:stretch}.ss-top .btn{width:100%;padding:12px}}
 .btn{text-decoration:none} a.btn{color:inherit;display:inline-flex;align-items:center;gap:6px}
 @media (max-width:760px){.rec-acts .btn{flex:1 1 100%;justify-content:center;padding:12px}}
 .recibo-bar{margin-top:8px;padding:10px;border-radius:10px;background:var(--amb2);gap:8px}
@@ -264,7 +262,6 @@ nav button svg.ic{margin-right:2px}
 .mseg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .mseg.cfgnav{grid-template-columns:repeat(3,1fr)} .cfgnav .sh{display:none}
 @media (max-width:760px){.cfgnav .lg{display:none}.cfgnav .sh{display:inline}.mseg.cfgnav button{padding:10px 2px;font-size:14px}}
-.tel-falta{font-size:17px;margin:0 2px 10px}
 .chip .per{color:var(--mute);font-weight:500}
 @media (max-width:760px){
   body{font-size:16px}
@@ -280,7 +277,7 @@ nav button svg.ic{margin-right:2px}
   #bnav button.on{color:var(--acc);background:var(--acc2)}
   main{padding-bottom:110px}
   footer{padding-bottom:100px}
-  .toast{bottom:calc(150px + env(safe-area-inset-bottom))}
+  .toast,.toast.acao{bottom:calc(150px + env(safe-area-inset-bottom))}
   .lst-d{grid-template-columns:50px 1fr;padding:10px}
   .lst-n b{font-size:22px}
   .lst-i .chip{font-size:15px;padding:5px 8px;line-height:1.35}
@@ -349,11 +346,8 @@ table.hor td:nth-child(3){width:56px}
 .lst-i .chip{font-size:13px;padding:3px 7px;white-space:normal}
 .lst-f{font-size:11px;font-weight:700;color:var(--red)}
 @media (max-width:760px){
-  header h1 small{display:none} h1{font-size:16px}
+  h1{font-size:16px}
   .top{padding:8px 16px;gap:8px 10px}
-  .ficheiro{max-width:none;width:100%;gap:6px}
-  .ficheiro .btn{padding:5px 10px;font-size:14px}
-  .tema .tl{display:none}
   nav .lg{display:none} nav .sh{display:inline}
   /* tabelas em cartões */
   table.rt,table.rt tbody{display:block}
@@ -457,6 +451,7 @@ body.sem-sessao #tabs,body.sem-sessao #bnav,body.sem-sessao .mesnav,body.sem-ses
 .inst-ic{display:inline-flex;vertical-align:-3px}.inst-ic svg{width:18px;height:18px}
 @media (max-width:760px){.entrada{margin:24px 12px}.btn-google{width:100%}}
 </style>
+</head><body>
 <header>
   <div class="top">
     <h1><span class="logo" id="logoTopo"></span><span class="tt">Gestão de Cuidadoras</span> <span class="estado" id="estado"></span></h1>
@@ -481,8 +476,11 @@ body.sem-sessao #tabs,body.sem-sessao #bnav,body.sem-sessao .mesnav,body.sem-ses
   <button data-tab="mae"><span class="i">👤</span>Mãe</button>
   <button data-tab="copias"><span class="i">⚙️</span>Configurações</button>
 </nav>
-<div id="modal"><div class="box" id="mbox"></div></div>
-<div class="toast" id="toast"></div>
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="mboxT"><div class="box" id="mbox"></div></div>
+<div id="modal2" role="dialog" aria-modal="true" aria-labelledby="mbox2T"><div class="box" id="mbox2"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="toast acao" id="toastA" role="status" aria-live="polite"><span id="toastAT"></span><button type="button" id="toastAB">Desfazer</button></div>
+<div id="erroBox" role="alert"><span id="erroT"></span><button type="button" class="btn s" id="erroOk">OK</button></div>
 <footer>jprocha-pt · Os dados ficam guardados na base partilhada (Firebase), só acessível às contas autorizadas. Para uma cópia de segurança, use “Descarregar cópia” em ⚙️ Configurações.</footer>
 
 <script>
@@ -530,7 +528,7 @@ function pascoa(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=
 function ibanOk(s){const t=String(s||'').replace(/\s+/g,'').toUpperCase();if(!/^[A-Z]{2}\d{2}[A-Z0-9]{8,30}$/.test(t))return null;const r=t.slice(4)+t.slice(0,4);let m=0;for(const ch of r){const v=parseInt(ch,36);m=(m*(v>9?100:10)+v)%97}return m===1}
 function fmtIban(s){return String(s||'').replace(/\s+/g,'').toUpperCase().replace(/(.{4})/g,'$1 ').trim()}
 
-/* ---------- dados iniciais (da folha Cuidadoras_Pais.xlsx) ---------- */
+/* ---------- dados iniciais ---------- */
 function c0(o){return Object.assign({id:uid(),nome:'',tipo:'pessoa',contacto:'',email:'',titular:'',iban:'',modelo:'hora',mensal:0,diasBase:22,horasDia:8,taxas:{util:0,sab:0,dom:0,fer:0},cor:CORES[0],ativo:true,comparar:true,noite:0,inicio:'',fim:'',notas:''},o)}
 function inicial(){
   return {versao:4,colabs:[],
@@ -548,7 +546,7 @@ if(!Array.isArray(S.colabs))S.colabs=[];
 S.meses=S.meses||{};
 S.colabs.forEach(c=>{if(!c.pp){const n=num(c.noite),mk=x=>({util:x(),sab:x(),dom:x(),fer:x()});
   c.pp={hab:mk(()=>({manha:'',tarde:'',noite:c.modelo!=='mensal'&&n?n:''})),ext:mk(()=>({manha:'',tarde:'',noite:n||''}))}}});
-S.colabs.forEach(c=>{if(c.noite===undefined)c.noite=c.id==='leny'?40:0;if(c.inicio===undefined){c.inicio=c.id==='leny'?'2026-08-19':'';c.fim=''}});
+S.colabs.forEach(c=>{if(c.noite===undefined)c.noite=0;if(c.inicio===undefined){c.inicio='';c.fim=''}});
 if((S.versao||1)<2){
   Object.values(S.meses).forEach(M=>(M.turnos||[]).forEach(t=>{if(['manha','tarde','noite'].includes(t.periodo))t.periodo+='X'}));
   if(S.config.horarios){['manha','tarde','noite'].forEach(p=>{S.config.horarios[p+'X']=S.config.horarios[p]});['manha','tarde','noite','dia'].forEach(p=>S.config.horarios[p]=clone(HOR0[p]))}
@@ -561,8 +559,7 @@ sincDia();
 Object.values(S.meses).forEach(M=>(M.turnos||[]).forEach(t=>{if(!t.periodo||!PER[t.periodo])t.periodo='dia'}));
 S.meses=S.meses||{};}
 migrar();
-const hoje=new Date();
-let cur={y:hoje.getFullYear(),m:hoje.getMonth()};
+let cur={y:new Date().getFullYear(),m:new Date().getMonth()};
 let tab='mes';
 let comp={dias:'fds',horas:8};
 try{const t=localStorage.getItem(KEY+'.tab');if(t)tab=t}catch(e){}
@@ -584,7 +581,7 @@ function marcarSujos(){
 }
 function save(){
   S.alteradoEm=new Date().toISOString();
-  if(!DB){try{localStorage.setItem(KEY+'.local',JSON.stringify(S))}catch(e){}estado();return}
+  if(!DB){estado();return}
   marcarSujos();guardaCache();clearTimeout(flushT);flushT=setTimeout(enviar,500);estado();
 }
 /* JSON estável (chaves ordenadas) para comparar versões sem falsos positivos */
@@ -637,7 +634,7 @@ async function enviar(){
         else if(id==='estado')await comTrava('estado',async()=>{
           const ref=DB.doc('app/estado'),snap=await ref.get({source:'server'});let d=clone(estadoDoc());
           if(snap.exists&&!enviado.estado){const Rm=snap.data();S.colabs=clone(Rm.colabs||[]);S.config=clone(Rm.config||S.config);S.versao=Rm.versao||S.versao;enviado.estado=sJ(Rm);fcache={};migrar();juntou=true;return}
-          if(!(d.colabs||[]).length&&snap.exists&&((snap.data().colabs)||[]).length>0){erroSync='gravação bloqueada';toast('Não gravei: a lista de pessoas ficaria vazia. Recarregue a página.');return}
+          if(!(d.colabs||[]).length&&snap.exists&&((snap.data().colabs)||[]).length>0){erroSync='gravação bloqueada';erro('Não gravei: a lista de pessoas ficaria vazia. Recarregue a página.');return}
           if(snap.exists&&enviado.estado){const Rm=snap.data(),B=JSON.parse(enviado.estado);
             if(!igual(Rm,B)){d=merge3(B,d,clone(Rm));S.colabs=d.colabs||[];S.config=d.config||S.config;S.versao=d.versao||S.versao;fcache={};juntou=true}}
           await ref.set(d);enviado.estado=sJ(d)});
@@ -653,7 +650,7 @@ async function enviar(){
       }catch(e){
         /* sem internet: a alteração fica guardada neste aparelho e é enviada quando a ligação voltar */
         if(e&&(e.code==='unavailable'||e.code==='deadline-exceeded'||!navigator.onLine)){sujos.add(id);semRede=true;parar=true;agendaEnvio(15000)}
-        else{erroSync=e&&(e.code==='invalid_argument'||e.code==='permission-denied')?'sem permissão para alterar':(e&&e.message)||'erro';toast('Não foi possível guardar: '+erroSync)}
+        else{erroSync=e&&(e.code==='invalid_argument'||e.code==='permission-denied')?'sem permissão para alterar':(e&&e.message)||'erro';erro('Não foi possível guardar: '+erroSync)}
       }finally{aGravar--;emCurso.delete(id)}
       marcarSujos();if(parar)break;
     }
@@ -668,9 +665,9 @@ function pedirRender(){
 }
 document.addEventListener('focusout',()=>{if(renderPend){setTimeout(()=>{if(renderPend){renderPend=false;pedirRender()}},50)}});
 /* ---------- Firebase: entrada com Google e base de dados ---------- */
-/* Só estas contas podem entrar. As mesmas estão nas regras de segurança do Firebase (regras-firestore.txt). */
-const PERMITIDOS=['josepedrorocha@gmail.com','anammrocha1@gmail.com'];
-let entrada='a verificar',utilizador=null,erroEntrada='';
+/* Quem pode entrar é decidido só pelas regras de segurança do Firebase (regras-firestore.txt), que não são públicas.
+   A app percebe que uma conta não tem acesso quando o Firebase responde "sem permissão". */
+let entrada='a verificar',utilizador=null,erroEntrada='',baseLigada=false;
 /* Cada documento fica guardado como texto JSON no campo "j": assim aceita tudo o que a app grava
    (listas dentro de listas, campos vazios) exatamente como antes, sem conversões. */
 function criarDB(fs){
@@ -695,7 +692,9 @@ function criarDB(fs){
 }
 const MSG_ENTRADA={
   'auth/network-request-failed':'Sem ligação à internet. Verifique a rede e tente de novo.',
-  'auth/unauthorized-domain':'Este endereço ainda não está autorizado no Firebase (Authentication → Settings → Authorized domains).',
+  'auth/unauthorized-domain':'Este endereço ainda não está autorizado no Firebase (Authentication → Configurações → Domínios autorizados).',
+  'auth/web-storage-unsupported':'Este navegador não deixa guardar a sessão. Desligue a navegação privada ou experimente outro navegador.',
+  'auth/popup-blocked':'O navegador bloqueou a janela do Google. Autorize janelas deste site e tente de novo.',
   'auth/too-many-requests':'Demasiadas tentativas. Espere um pouco e tente de novo.',
   'auth/internal-error':'O Google não respondeu. Tente de novo.'};
 async function entrarGoogle(){
@@ -705,13 +704,21 @@ async function entrarGoogle(){
   catch(e){const c=e&&e.code;
     if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
     if(c==='auth/popup-blocked'||c==='auth/operation-not-supported-in-this-environment'){try{await firebase.auth().signInWithRedirect(p);return}catch(e2){}}
-    erroEntrada=MSG_ENTRADA[c]||('Não foi possível entrar ('+(c||'erro')+').');render()}
+    erroEntrada=MSG_ENTRADA[c]||('Não foi possível entrar ('+(c||'erro')+').');
+    /* no iPhone, a app instalada no ecrã principal tem limitações com a janela do Google */
+    if(ehIOS()&&instalada())erroEntrada+=' No iPhone, se não conseguir entrar na aplicação instalada, abra o endereço da aplicação no Safari e entre aí.';
+    render()}
+}
+/* sair: termina a sessão e apaga TUDO o que ficou neste aparelho (a cópia da app e a cópia do Firebase) */
+async function sairELimpar(){
+  apagaCache();
+  try{await firebase.auth().signOut()}catch(e){}
+  try{await firebase.firestore().terminate()}catch(e){}
+  try{await firebase.firestore().clearPersistence()}catch(e){}
+  location.reload();
 }
 function sair(){
-  confirmar('Sair da conta <b>'+esc((utilizador&&utilizador.email)||'')+'</b> neste aparelho?',async()=>{
-    try{await firebase.auth().signOut()}catch(e){}
-    apagaCache();try{await firebase.firestore().clearPersistence()}catch(e){}
-    location.reload()},'Sim, sair');
+  confirmar('Sair da conta <b>'+esc((utilizador&&utilizador.email)||'')+'</b> neste aparelho? Os dados guardados neste aparelho são apagados (continuam no Firebase).',()=>sairELimpar(),'Sim, sair');
 }
 async function ligar(){
   if(!window.firebase){entrada='sem rede';render();return}
@@ -725,9 +732,9 @@ async function ligar(){
   firebase.auth().onAuthStateChanged(u=>{
     utilizador=u;
     if(!u){if(entrada==='ok'){location.reload();return}entrada='entrar';render();return}
-    if(!PERMITIDOS.includes(String(u.email||'').toLowerCase())){entrada='sem acesso';render();return}
-    if(entrada==='ok')return;
-    entrada='ok';render();ligarBase(criarDB(fs));
+    if(baseLigada)return;baseLigada=true;
+    /* já entrou antes neste aparelho: abre logo com os dados guardados; senão espera que o Firebase confirme o acesso */
+    entrada=leCache()?'ok':'a verificar';render();ligarBase(criarDB(fs));
   });
 }
 /* ---------- sem internet: cópia dos dados neste aparelho ----------
@@ -744,7 +751,10 @@ function agendaEnvio(ms){clearTimeout(envioT);envioT=setTimeout(()=>{if(sujos.si
 window.addEventListener('online',()=>{semRede=false;estado();if(sujos.size){toast('Ligação de volta: a enviar as alterações…');agendaEnvio(800)}});
 window.addEventListener('offline',()=>{semRede=true;estado()});
 /* erro da base: mostra-o no topo (não é escondido pelo "A demorar…") e escreve o motivo na consola */
-function falhaBase(e){modo='erro';erroSync=(e&&e.code)||'erro';try{console.error('[Gestão de Cuidadoras] erro da base de dados:',e&&e.code,e&&e.message)}catch(_){}estado();pedirRender()}
+function falhaBase(e){modo='erro';erroSync=(e&&e.code)||'erro';try{console.error('[Gestão de Cuidadoras] erro da base de dados:',e&&e.code,e&&e.message)}catch(_){}
+  /* o Firebase recusou: esta conta não está nas regras de segurança */
+  if(/permission/.test(erroSync)&&!servidorOk){apagaCache();entrada='sem acesso';render();return}
+  estado();pedirRender()}
 function ligarBase(db){
   DB=db;modo='a ligar';
   const c=leCache();
@@ -756,14 +766,14 @@ function ligarBase(db){
     render();
   }
   estado();
-  const t=setTimeout(()=>{if(!servidorOk&&modo!=='erro'){modo='lento';estado()}},10000);
+  const t=setTimeout(()=>{if(!servidorOk&&modo!=='erro'){modo='lento';estado();if(entrada!=='ok')render()}},10000);
   db.doc('app/estado').onSnapshot(snap=>{
     if(snap.exists){
       const d=snap.data(),j=sJ(d);
       if(!sujos.has('estado')&&!emCurso.has('estado')&&j!==enviado.estado){S.colabs=clone(d.colabs||[]);S.config=clone(d.config||S.config);S.versao=d.versao||4;enviado.estado=j;fcache={};migrar();pedirRender()}
       else enviado.estado=enviado.estado||j;
     }
-    if(!snap.metadata.fromCache){carregado.estado=true;clearTimeout(t);modo='ok';servidorOk=true;semRede=false;if(!snap.exists)pedirRender();if(sujos.size)agendaEnvio(500)}
+    if(!snap.metadata.fromCache){carregado.estado=true;clearTimeout(t);modo='ok';servidorOk=true;semRede=false;if(entrada!=='ok'){entrada='ok';render()}if(!snap.exists)pedirRender();if(sujos.size)agendaEnvio(500);copiaDiaria()}
     else if(servidorOk&&!navigator.onLine)semRede=true;
     estado();
   },falhaBase);
@@ -787,8 +797,7 @@ function estado(){
   const el=document.getElementById('estado');if(!el)return;
   if(entrada!=='ok'){el.textContent='';el.className='estado';el.title='';return}
   let t,c='estado',tt='';
-  if(modo==='local'){t='⚠️ Só neste browser';c+=' aviso';tt='Sem ligação à base partilhada: as alterações ficam só neste browser'}
-  else if(modo==='erro'&&/permission/.test(erroSync)){t='⚠️ Sem permissão na base de dados';c+=' aviso';tt='O Firebase recusou o acesso: confirme as Regras do Firestore ('+erroSync+')'}
+  if(modo==='erro'&&/permission/.test(erroSync)){t='⚠️ Sem permissão na base de dados';c+=' aviso';tt='O Firebase recusou o acesso: confirme as Regras do Firestore ('+erroSync+')'}
   else if(modo==='erro'){t='⚠️ Ligação perdida';c+=' aviso';tt='Recarregue a página ('+erroSync+')'}
   else if(semRede||(daCache&&!servidorOk&&modo==='lento')){const n=sujos.size+emCurso.size;t='📴 Sem internet'+(n?' · '+n+' '+(n===1?'alteração':'alterações')+' por enviar':'');c+=' aviso';tt=n?'As alterações ficam guardadas neste aparelho e são enviadas quando a internet voltar':'A mostrar os dados guardados neste aparelho'}
   else if(!carregado.estado||(!servidorOk&&!daCache)){t=modo==='lento'?'⏳ A demorar…':'⏳ A carregar…'}
@@ -799,6 +808,22 @@ function estado(){
   el.className=c;el.textContent=t;el.title=tt;
 }
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>e.classList.remove('on'),2200)}
+/* erros: ficam no ecrã até carregar em OK */
+function erro(t){const b=document.getElementById('erroBox');document.getElementById('erroT').textContent=t;b.classList.add('on');document.getElementById('toast').classList.remove('on')}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='erroOk')document.getElementById('erroBox').classList.remove('on')});
+/* "Desfazer": guarda o estado antes de uma ação que apaga e permite voltar atrás durante 8 segundos */
+const fotoDados=()=>clone({colabs:S.colabs,config:S.config,meses:S.meses,saude:S.saude||{}});
+let desfazerFn=null;
+function comDesfazer(msg,fn,depois){
+  if(comDesfazer._depois){const d=comDesfazer._depois;comDesfazer._depois=null;try{d()}catch(_){}}
+  comDesfazer._depois=depois||null;
+  const antes=fotoDados();fn();save();render();
+  const b=document.getElementById('toastA');document.getElementById('toastAT').textContent=msg;b.classList.add('on');
+  document.getElementById('toast').classList.remove('on');
+  desfazerFn=()=>{S.colabs=antes.colabs;S.config=antes.config;S.meses=antes.meses;S.saude=antes.saude;fcache={};migrar();save();render();if(typeof atualizaZona==='function')atualizaZona();toast('Desfeito')};
+  clearTimeout(comDesfazer._t);comDesfazer._t=setTimeout(()=>{b.classList.remove('on');desfazerFn=null;const d=comDesfazer._depois;comDesfazer._depois=null;if(d)d()},8000);
+}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='toastAB'&&desfazerFn){const f=desfazerFn;desfazerFn=null;comDesfazer._depois=null;clearTimeout(comDesfazer._t);document.getElementById('toastA').classList.remove('on');f()}});
 const colab=id=>S.colabs.find(c=>c.id===id);
 
 /* ---------- feriados ---------- */
@@ -929,17 +954,17 @@ const G_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d=
 function vEntrada(){
   const topo=`<span class="logo grande">${ICONE_SVG}</span><h2>Gestão de Cuidadoras</h2>`;
   let c;
-  if(entrada==='a verificar')c=`<p class="mute">A verificar a sessão…</p>`;
+  if(entrada==='a verificar')c=`<p class="mute">${utilizador?'A verificar o acesso de <b>'+esc(utilizador.email||'')+'</b>…':'A verificar a sessão…'}</p>${modo==='lento'?'<p class="small mute">Está a demorar. Verifique a ligação à internet.</p><button class="btn" data-a="recarregar">Tentar de novo</button>':''}`;
   else if(entrada==='sem rede')c=`<p>Não foi possível ligar à internet.</p><p class="small mute">Verifique a rede e tente de novo.</p><button class="btn p" data-a="recarregar">Tentar de novo</button>`;
   else if(entrada==='sem config')c=`<p>A aplicação ainda não está ligada ao Firebase.</p><p class="small mute">Falta preencher o ficheiro <b>firebase-config.js</b>.</p>`;
-  else if(entrada==='sem acesso')c=`<p>A conta <b>${esc((utilizador&&utilizador.email)||'')}</b> não tem acesso a esta aplicação.</p><p class="small mute">Entre com uma das contas autorizadas.</p><button class="btn p" data-a="sair0">Entrar com outra conta</button>`;
+  else if(entrada==='sem acesso')c=`<p>A conta <b>${esc((utilizador&&utilizador.email)||'')}</b> não tem acesso a esta aplicação.</p><p class="small mute">Entre com uma das contas autorizadas. Se devia ter acesso, peça a quem gere a aplicação para acrescentar este email nas regras do Firebase.</p><button class="btn p" data-a="sair0">Entrar com outra conta</button>`;
   else c=`<p>Entre com a sua conta Google para ver e alterar os dados.</p><button class="btn-google" data-a="entrarGoogle">${G_SVG}<span>Entrar com Google</span></button>${erroEntrada?`<p class="erro">${esc(erroEntrada)}</p>`:''}<p class="small mute" style="margin-top:14px">Só as contas autorizadas conseguem entrar.</p>`;
   return `<div class="card entrada">${topo}${c}</div>`;
 }
 /* ---------- instalar a app ---------- */
 let pedidoInstalar=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();pedidoInstalar=e;if(entrada==='ok')pedirRender()});
-window.addEventListener('appinstalled',()=>{pedidoInstalar=null;toast('App instalada');if(entrada==='ok')pedirRender()});
+window.addEventListener('appinstalled',()=>{pedidoInstalar=null;toast('Aplicação instalada');if(entrada==='ok')pedirRender()});
 const instalada=()=>{try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: window-controls-overlay)').matches||navigator.standalone===true}catch(e){return false}};
 const ehIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const ehAndroid=()=>/android/i.test(navigator.userAgent);
@@ -947,7 +972,7 @@ function bannerInstalar(){
   if(instalada()||!(pedidoInstalar||ehIOS()))return '';
   let n='';try{n=localStorage.getItem(KEY+'.instNao')||''}catch(e){}
   if(n&&n>=dkey(addD(new Date(),-30)))return '';
-  return `<div class="avisos"><div class="aviso-b">📱 <span><b>Instale a app</b> ${isPhone()?'no telemóvel':'no computador'}: fica com um ícone e abre numa janela própria.</span><button class="btn s p" data-a="instalar">Instalar app</button><button class="btn s" data-a="instNao">Agora não</button></div></div>`;
+  return `<div class="avisos"><div class="aviso-b">📱 <span><b>Instale a aplicação</b> ${isPhone()?'no telemóvel':'no computador'}: fica com um ícone e abre numa janela própria.</span><button class="btn s p" data-a="instalar">Instalar</button><button class="btn s" data-a="instNao">Agora não</button></div></div>`;
 }
 async function instalar(){
   if(pedidoInstalar){const p=pedidoInstalar;pedidoInstalar=null;
@@ -958,7 +983,7 @@ async function instalar(){
 const ICP_PART='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4M12 2v13"/></svg>';
 function modalInstalar(){
   let t,p;
-  if(instalada()){t='A app já está instalada';p=`<p>Está a usar a app instalada. Para a abrir, toque no ícone <b>Cuidadoras</b> no ecrã principal ou no computador.</p>`}
+  if(instalada()){t='A aplicação já está instalada';p=`<p>Está a usar a aplicação instalada. Para a abrir, toque no ícone <b>Cuidadoras</b> no ecrã principal ou no computador.</p>`}
   else if(ehIOS()){t='Instalar no iPhone ou iPad';p=`<p class="small">A Apple não deixa instalar com um só botão, por isso são 3 toques:</p><ol class="passos-inst">
       <li>Abra esta página no <b>Safari</b>.</li>
       <li>Toque em <b>Partilhar</b> <span class="inst-ic">${ICP_PART}</span> (em baixo, ao centro).</li>
@@ -966,13 +991,13 @@ function modalInstalar(){
   else if(ehAndroid()){t='Instalar no telemóvel Android';p=`<p class="small">Se o botão não abriu a instalação:</p><ol class="passos-inst">
       <li>Abra esta página no <b>Chrome</b>.</li>
       <li>Toque nos <b>⋮</b> (três pontos, em cima à direita).</li>
-      <li>Toque em <b>“Instalar app”</b> (ou “Adicionar ao ecrã principal”) e confirme.</li></ol>`}
+      <li>Toque em <b>“Instalar aplicação”</b> (pode aparecer “Instalar app” ou “Adicionar ao ecrã principal”) e confirme.</li></ol>`}
   else{t='Instalar no computador';p=`<p class="small">Se o botão não abriu a instalação:</p><ol class="passos-inst">
       <li>Abra esta página no <b>Chrome</b> ou no <b>Edge</b>.</li>
       <li>Na barra de endereços, à direita, clique no ícone <b>Instalar</b> (um ecrã com uma seta).</li>
-      <li>Ou: <b>⋮</b> → <b>“Transmitir, guardar e partilhar”</b> → <b>“Instalar página como app”</b>.</li></ol>
-      <p class="small mute">Fica com um ícone no ambiente de trabalho e a app abre numa janela própria.</p>`}
-  abrir(`<h3>📱 ${t}</h3>${p}<div class="bar" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-a="copiar" data-txt="${LINK_APP}" data-msg="Link copiado">🔗 Copiar link</button><button class="btn p" data-a="fechar">OK</button></div>`);
+      <li>Ou: <b>⋮</b> → <b>“Transmitir, guardar e partilhar”</b> → <b>“Instalar página como aplicação”</b> (ou “…como app”).</li></ol>
+      <p class="small mute">Fica com um ícone no ambiente de trabalho e a aplicação abre numa janela própria.</p>`}
+  abrir(`<h3>📱 ${t}</h3>${p}<div class="bar" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-a="copiar" data-txt="${LINK_APP}" data-msg="Endereço copiado">🔗 Copiar o endereço</button><button class="btn p" data-a="fechar">OK</button></div>`);
 }
 function render0(){
   document.body.classList.toggle('sem-sessao',entrada!=='ok');
@@ -1024,10 +1049,11 @@ function vContas(){
 }
 function vVazio(){
   return `<div class="card" style="max-width:640px;margin:20px auto;text-align:left">
-    <h2 style="margin-top:0">Ainda não há dados partilhados</h2>
-    <p>Para começar, abra a cópia <b>.json</b> que gravou na versão do seu computador:</p>
+    <h2 style="margin-top:0">Ainda não há dados</h2>
+    <p>Se tem uma cópia de segurança (ficheiro <b>.json</b>), abra-a para recuperar tudo:</p>
     <label class="btn p">📂 Abrir uma cópia<input type="file" data-imp accept=".json,application/json" hidden></label>
-    <p class="small mute">Também pode começar do zero: adicione pessoas e empresas na aba 👥 Pessoas.</p></div>`;
+    <p class="small mute">Também pode começar do zero: acrescente as pessoas e empresas em <b>Configurações → Geral → Colaboradores e empresas</b>.</p>
+    <button class="btn" data-tab="copias">⚙️ Ir para Configurações</button></div>`;
 }
 const isPhone=()=>window.matchMedia('(max-width:760px)').matches;
 let subMes=irHojeTel?'dias':(()=>{try{return localStorage.getItem(KEY+'.subMes')||'dias'}catch(e){return 'dias'}})();
@@ -1039,7 +1065,7 @@ function vMes(){
   const T=totaisMes(M,K());
   const sm=cur.m===11?MESES[0]:MESES[cur.m+1];
   const av=vAvisos(T);
-  let estadoP='',estH='';
+  let estH='';
   if(T.cs.length){
     estH=`<div class="card estado-mes est-b-${T.estado}" style="margin-top:12px"><div class="bar" style="justify-content:space-between;margin-bottom:6px"><b>Pagamentos de ${MESES[cur.m]}</b>${badgeEstado(T)}</div><div class="bar">${T.estado!=='pago'&&T.falta>0?`<span class="small">Falta pagar <b>${eur(T.falta)}</b> · já pago ${eur(T.pago)}</span>`:`<span class="small">Pago ${eur(T.pago)}</span>`}</div>
       <div class="bar" style="margin-top:8px">${T.cs.filter(x=>x.r.ganho>0.004||x.r.pago>0).map(({c,r})=>{const ok=r.falta<=0.004;const PF=r.PF;const d=PF?(typeof PF==='string'?PF:PF.data):'';
@@ -1059,16 +1085,16 @@ function vMes(){
     <button class="btn p" data-a="preencher">Preencher</button>
     <button class="btn d" data-a="limparColab">Limpar desta pessoa</button>
     <button class="btn d" data-a="limparTudo">Limpar tudo</button>
-  </div><div class="small mute" style="margin-top:6px">Ou toque num dia do calendário para adicionar ou retirar turnos um a um.</div>`,{cls:'noprint',style:'margin-top:12px',fechado:tel});
+  </div><div class="small mute" style="margin-top:6px">Ou toque num dia do calendário para acrescentar ou apagar turnos um a um.</div>`,{cls:'noprint',style:'margin-top:12px',fechado:tel});
   let pg='<div class="pags">';
   if(!T.cs.length)pg+=`<div class="card mute">Ninguém trabalhou ainda em ${MESES[cur.m]}. Marque turnos no calendário (toque num dia) ou use o “Preencher rápido”.</div>`;
   T.cs.forEach(({c,r})=>{pg+=vPag(c,r,M)});
   pg+='</div>';
   const pags=sec('m-pags',`Pagamentos de ${MESES[cur.m]}`,pg,{extra:`<span class="small mute">a pagar no início de ${sm}</span>${T.cs.length?'<button class="btn s noprint" data-a="relatorio">📤 Resumo para enviar</button>':''}`});
-  if(!tel)return av+resumo+estadoP+cal+preencher+pags;
+  if(!tel)return av+resumo+cal+preencher+pags;
   const seg=(v,l)=>`<button class="${subMes===v||(v==='pag'&&subMes==='resumo')?'on':''}" data-a="subMes" data-v="${v}">${l}</button>`;
   let h=av+`<div class="mseg">${seg('dias','📅 Dias')}${seg('pag','💶 Pagar')}</div>`;
-  if(subMes==='pag'||subMes==='resumo')h+=resumo+estadoP+pags;
+  if(subMes==='pag'||subMes==='resumo')h+=resumo+pags;
   else h+=cal+preencher;
   return h;
 }
@@ -1102,14 +1128,15 @@ function vLembretes(T){
   const p=ssCfg(),cc=p.colabId&&colab(p.colabId);
   if(ssAtivo()&&cc&&mesVisto>=mesHoje){
     const r=calcSS(p),ok=M.lembOk||{},duo=p.duo,real=p.regime==='real';
-    const sub=duo==='14'?r.sal:duo==='12_50'?r.sal/2:0,ssSub=real?r2(sub*(r.te+r.tt)):0;
-    const [py,pm]=mesAnterior(cur.y,cur.m),mf=p.mesFerias!==undefined?+p.mesFerias:5;
+    const sub=duo==='14'?r.sal:0,ssSub=real?r2(sub*(r.te+r.tt)):0;
+    const [py,pm]=mesAnterior(cur.y,cur.m),mf=mesFer(p);
     let guia=r2(r.ssE+r.ssT);
     if(duo!=='12'&&real){if(pm===mf)guia=r2(guia+ssSub);if(pm===11)guia=r2(guia+ssSub)}
     const lim=cur.m===7?31:20,nm=esc(cc.nome);
     const iniK=(p.inicio||'').slice(0,7),mesAnt=mkey(py,pm),anoAnt=(cur.y-1)+'-12';
     const lemb=(id,ic,txt,dia,ref)=>{if(ok[id])return;if(iniK&&ref&&ref<iniK)return;const atras=mesVisto===mesHoje&&hoje.slice(8)>String(dia).padStart(2,'0');
       L.push({ic,cls:atras?'red':'',txt:txt+(atras?' <b class="neg">Já passou o prazo.</b>':''),btn:`<button class="btn s" data-a="lembOk" data-id="${id}">✓ Já tratei</button>`})};
+    {const avL=avisoValoresLegais();if(avL)L.push({ic:'⚠️',cls:'am',txt:esc(avL),btn:''})}
     lemb('ss','🏛️',`Pagar a <b>Segurança Social de ${MESES[pm]}</b> da ${nm}: <b>${eur(guia)}</b>, entre os dias <b>10 e ${lim} de ${MESES[cur.m]}</b>.`,lim,mesAnt);
     if(duo!=='12'&&cur.m===11)lemb('natal','🎄',`Pagar o <b>subsídio de Natal</b> da ${nm}: <b>${eur(sub)}</b>, até <b>15 de dezembro</b>.`,15,mesVisto);
     if(r.irsMes){let ir=r.irsMes;if(duo!=='12'&&(pm===mf||pm===11))ir=r2(ir+r.irsSub);
@@ -1154,11 +1181,12 @@ const porHora=(a,b)=>minIni(a)-minIni(b)||ordemP(a)-ordemP(b);
 const fichasAbertas=new Set();
 document.addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.cid){if(d.open)fichasAbertas.add(d.dataset.cid);else fichasAbertas.delete(d.dataset.cid)}},true);
 let vista=(()=>{try{const v=localStorage.getItem(KEY+'.vista');if(v)return v}catch(e){}return window.innerWidth<700?'lista':'grade'})();
-function chipTurno(t,M){const c=colab(t.colabId),p=PER[t.periodo||'dia'],tx=txHor(t),pg=!!(t.pago||(M.pagos&&M.pagos[t.colabId]));
+/* "etiqueta" de um turno ou de um acerto; curto = versão do calendário (com dica ao passar o rato) */
+function chipTurno(t,M,curto){const c=colab(t.colabId),p=PER[t.periodo||'dia'],tx=txHor(t),pg=!!(t.pago||(M.pagos&&M.pagos[t.colabId])),nm=esc(c?c.nome:'?');
   const per=(t.periodo||'dia')==='dia'?'':`<span class="per">${esc(p.n.toLowerCase())}</span> `;
-  return `<div class="chip${p.extra?' x':''}${pg?' pg':''}" style="--c:${c?c.cor:'#888'}">${pg?'<b class="ck">✓</b>':''}${icP(t.periodo)} <b>${esc(c?c.nome:'?')}</b> ${per}<span class="hr">${esc(tx)}</span></div>`}
-function chipAj(a,M){const c=colab(a.colabId),sg=a.tipo==='adiant'?'':sinal(a.tipo)<0?'−':'+';
-  return `<div class="chip aj${a.pago?' pg':''}" style="--c:${c?c.cor:'#888'}">${a.pago?'<b class="ck">✓</b>':''}${AJI[a.tipo]} <b>${esc(c?c.nome:'?')}</b> <span class="per">${esc(AJ[a.tipo].toLowerCase())}</span> ${sg}${eur(num(a.valor))}</div>`}
+  return `<div class="chip${p.extra?' x':''}${pg?' pg':''}" style="--c:${c?c.cor:'#888'}"${curto?` title="${esc(p.n)} · ${nm} · ${esc(tx)}${pg?' · pago':''}"`:''}>${pg?'<b class="ck">✓</b>':''}${icP(t.periodo)} ${curto?`${nm} · ${esc(tx)}`:`<b>${nm}</b> ${per}<span class="hr">${esc(tx)}</span>`}</div>`}
+function chipAj(a,M,curto){const c=colab(a.colabId),sg=a.tipo==='adiant'?'':sinal(a.tipo)<0?'−':'+',nm=esc(c?c.nome:'?');
+  return `<div class="chip aj${a.pago?' pg':''}" style="--c:${c?c.cor:'#888'}"${curto?` title="${esc(AJ[a.tipo])} · ${nm} · ${eur(num(a.valor))}${a.desc&&a.desc!==AJ[a.tipo]?' · '+esc(a.desc):''}"`:''}>${a.pago?'<b class="ck">✓</b>':''}${AJI[a.tipo]} ${curto?`${nm} ${sg}${eur(num(a.valor)).replace(',00','')}`:`<b>${nm}</b> <span class="per">${esc(AJ[a.tipo].toLowerCase())}</span> ${sg}${eur(num(a.valor))}`}</div>`}
 function vLista(M){
   const y=cur.y,m=cur.m,fer=feriados(y),nd=new Date(y,m+1,0).getDate(),hk=hojeK();
   let h='<div class="lst">';
@@ -1184,8 +1212,8 @@ function vCal(M){
     h+=`<div class="cal-d t-${tp}${k===hk?' hoje':''}" data-dia="${k}">
       <div class="cal-n">${d}${fer[k]?'<span class="bdg fer">Feriado</span>':(diaSemana(k)%6===0?'<span class="bdg fds">'+(diaSemana(k)===6?'Sábado':'Domingo')+'</span>':'')}</div>
       ${fer[k]?`<span class="fer" title="${esc(fer[k])}">${esc(fer[k])}</span>`:''}
-      ${ts.sort(porHora).map(t=>{const c=colab(t.colabId),p=PER[t.periodo||'dia'],tx=txHor(t),pg=!!(t.pago||(M.pagos&&M.pagos[t.colabId]));return `<div class="chip${p.extra?' x':''}${pg?' pg':''}" style="--c:${c?c.cor:'#888'}" title="${esc(p.n)} · ${esc(c?c.nome:'?')} · ${esc(tx)}${pg?' · PAGO':''}">${pg?'<b class="ck">✓</b>':''}${icP(t.periodo)} ${esc(c?c.nome:'?')} · ${esc(tx)}</div>`}).join('')}
-      ${M.ajustes.filter(a=>a.data===k).map(a=>{const c=colab(a.colabId),sg=a.tipo==='adiant'?'':sinal(a.tipo)<0?'−':'+';return `<div class="chip aj${a.pago||(M.pagos&&M.pagos[a.colabId]&&sinal(a.tipo)>0)?' pg':''}" style="--c:${c?c.cor:'#888'}" title="${esc(AJ[a.tipo])} · ${esc(c?c.nome:'?')} · ${eur(num(a.valor))}${a.desc&&a.desc!==AJ[a.tipo]?' · '+esc(a.desc):''}">${a.pago?'<b class="ck">✓</b>':''}${AJI[a.tipo]} ${esc(c?c.nome:'?')} ${sg}${eur(num(a.valor)).replace(',00','')}</div>`}).join('')}
+      ${ts.sort(porHora).map(t=>chipTurno(t,M,true)).join('')}
+      ${M.ajustes.filter(a=>a.data===k).map(a=>chipAj(a,M,true)).join('')}
     </div>`;
   }
   return h+'</div>';
@@ -1205,15 +1233,15 @@ function vPag(c,r,M){
   if(r.itens.length)rows+=`<tr><td colspan="2" class="small" style="font-weight:700;padding-top:10px">Extras, adiantamentos e acertos</td></tr>`;
   let ultDia=null;
   r.itens.forEach(x=>{
-    const o=x.o,dd='';
+    const o=x.o;
     if(x.data!==ultDia){ultDia=x.data;const f=x.data?feriados(+x.data.slice(0,4))[x.data]:'';const tp=x.data?tipoDia(x.data):'';
       rows+=`<tr class="diasep"><td colspan="2">${x.data?`${DSEML[diaSemana(x.data)]}, ${dataPT(x.data).slice(0,5)}${tp!=='util'?` <span class="bdg ${tp==='fer'?'fer':'fds'}" style="margin-left:4px">${tp==='fer'?esc(f||'Feriado'):TIPO[tp]}</span>`:''}`:'Sem data'}</td></tr>`}
     let lab,val,cls='',btn='',del='';
     if(x.k==='turno'){const P=PER[o.periodo];lab=`${icP(o.periodo)} ${P.n} <span class="mute" style="white-space:nowrap">· ${esc(txHor(o))}</span>${o.nota?`<div class="small mute">${esc(o.nota)}</div>`:''}`;val='+'+eur(x.v);
-      del=`<button class="btn s d noprint" data-a="delTurnoP" data-id="${o.id}" title="Retirar">✕</button>`}
+      del=`<button class="btn s d noprint" data-a="delTurnoP" data-id="${o.id}" title="Apagar" aria-label="Apagar">✕</button>`}
     else{lab=`${AJI[o.tipo]} ${esc(AJ[o.tipo])}${o.desc&&o.desc!==AJ[o.tipo]?`<div class="small mute">${esc(o.desc)}</div>`:''}`;
       val=(o.tipo==='adiant'?'':sinal(o.tipo)<0?'−':'+')+eur(x.v);if(sinal(o.tipo)<0&&o.tipo!=='adiant')cls='neg';
-      del=`<button class="btn s d noprint" data-a="delAj" data-id="${o.id}" title="Retirar">✕</button>`}
+      del=`<button class="btn s d noprint" data-a="delAj" data-id="${o.id}" title="Apagar" aria-label="Apagar">✕</button>`}
     if(r.pagavel(x)){const ad=x.k==='aj'&&o.tipo==='adiant';
       btn=o.pago?`<button class="btn s pg" data-a="pagarItem" data-k="${x.k}" data-id="${o.id}" title="Clique para anular">✓ ${ad?'Entregue':'Pago'} ${dataPT(o.pago).slice(0,5)}</button>`
                :r.PF&&r.falta<=0.004?'<span class="small pos" style="white-space:nowrap">✓ no fecho</span>'
@@ -1247,7 +1275,7 @@ function vLinhas(M,qual,titulo){
   const tot=M[qual].reduce((s,e)=>s+num(e.valor),0);
   return sec('c-'+qual,titulo,`<table class="linhas">${M[qual].map(e=>`<tr><td><input type="text" data-linha="${qual}" data-id="${e.id}" data-k="desc" value="${esc(e.desc)}"></td>
     <td class="n"><input type="number" step="0.01" data-linha="${qual}" data-id="${e.id}" data-k="valor" value="${e.valor}"></td>
-    <td class="n noprint"><button class="btn s d" data-a="delLinha" data-q="${qual}" data-id="${e.id}" title="Retirar">✕</button></td></tr>`).join('')}
+    <td class="n noprint"><button class="btn s d" data-a="delLinha" data-q="${qual}" data-id="${e.id}" title="Apagar" aria-label="Apagar">✕</button></td></tr>`).join('')}
   <tr class="tot"><td>Total</td><td class="n">${eur(tot)}</td><td></td></tr></table>
   <button class="btn s noprint" data-a="addLinha" data-q="${qual}" style="margin-top:8px">+ Adicionar linha</button>`,{extra:`<b>${eur(tot)}</b>`});
 }
@@ -1303,8 +1331,6 @@ function vColabs(){
         ${c.tipo!=='empresa'&&!c.semValor&&c.modelo!=='sessao'?`<div class="seglab w" style="margin-top:6px">🧾 Dados para o recibo de vencimento</div>`+f('nif','NIF')+f('niss','N.º Segurança Social (NISS)')+f('morada','Morada','text','w')+`<label class="f w">Categoria profissional<input type="text" data-cf="categoria" data-id="${c.id}" value="${esc(c.categoria||'')}" placeholder="Trabalhadora de serviço doméstico"></label>`:''}
         <label class="f w">Forma de pagamento<select data-cf="modelo" data-id="${c.id}">${Object.entries(MODELO).map(([k,v])=>`<option value="${k}" ${c.modelo===k?'selected':''}>${v}</option>`).join('')}</select></label>
         ${pr}
-        ${c.modelo==='sessao'||true?'':`<label class="f">🌙 € por noite<input type="number" step="0.01" data-cf="noite" data-id="${c.id}" value="${num(c.noite)}"></label>
-        <div class="calc">Extras: manhã/tarde <b>${eur(valorHora(c,'util'))}</b>/h${c.modelo!=='mensal'?' (dia útil)':''} · noite ${num(c.noite)?'<b>'+eur(num(c.noite))+'</b>':'à hora'}</div>`}
         <label class="f w">Notas<textarea data-cf="notas" data-id="${c.id}">${esc(c.notas)}</textarea></label>
       </div>
       <div class="bar" style="margin-top:10px"><label class="bar small"><input type="checkbox" data-cf="ativo" data-id="${c.id}" ${c.ativo?'checked':''}> Em serviço</label><label class="bar small"><input type="checkbox" data-cf="comparar" data-id="${c.id}" ${c.comparar!==false?'checked':''}> Entra em Comparar preços</label><label class="bar small"><input type="checkbox" data-cf="semValor" data-id="${c.id}" ${c.semValor?'checked':''}> 👪 Família (sem pagamento)</label><span style="flex:1"></span>
@@ -1391,15 +1417,29 @@ function vDef(){
     <button class="btn s" data-a="addMun" style="margin-top:10px">+ Adicionar feriado municipal</button></div>`+`<div class="fer-bl"><h3 class="ss-h" style="margin-top:0">Feriados de ${cur.y}</h3>`+`<table>${Object.keys(f).sort().map(k=>`<tr><td>${dataPT(k)}</td><td>${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][diaSemana(k)]}</td><td>${esc(f[k])}</td></tr>`).join('')}</table></div>`+`</div>`;
 }
 /* ---------- Segurança Social do serviço doméstico ---------- */
-const SS_REF={2026:{smn:920,ias:537.13},2027:{smn:970,ias:537.13,prev:true}};
+/* ---------- valores legais (rever todos os anos, em janeiro) ----------
+   Tudo o que muda de ano para ano está aqui. Se o ano atual ainda não estiver na lista, a app usa o último ano
+   que existe e mostra um aviso a pedir a atualização. */
+const SS_REF={2026:{smn:920,ias:537.13,minExist:12880},2027:{smn:970,ias:537.13,minExist:12880,prev:true}};
+const IRS_ANO=2026;   // ano das tabelas de retenção de IRS que estão em IRS_TAB (mais abaixo)
+const anoHoje=()=>new Date().getFullYear();
+const refAno=()=>{const a=anoHoje();return SS_REF[a]?a:Math.max(...Object.keys(SS_REF).map(Number).filter(x=>x<=a),...Object.keys(SS_REF).map(Number).slice(0,1))};
+const refLegal=()=>Object.assign({ano:refAno()},SS_REF[refAno()]);
+/* aviso quando faltam valores do ano atual (tabelas de IRS ou salário mínimo/IAS ainda "previstos") */
+function avisoValoresLegais(){const a=anoHoje(),r=SS_REF[a],L=[];
+  if(IRS_ANO<a)L.push('as tabelas de retenção de IRS são as de '+IRS_ANO);
+  if(!r)L.push('o salário mínimo e o IAS são os de '+refAno());else if(r.prev)L.push('o salário mínimo de '+a+' ('+eur(r.smn)+') ainda é uma previsão e o IAS ainda não foi confirmado');
+  return L.length?'Valores legais de '+a+' por confirmar: '+L.join('; ')+'. Peça a atualização da aplicação e confirme com um contabilista.':''}
+/* mês em que se paga o subsídio de férias (0 = janeiro … 7 = agosto) */
+const mesFer=p=>p&&p.mesFerias!==undefined&&p.mesFerias!==''?+p.mesFerias:7;
 const ssAtivo=()=>!!(S.config.ss&&S.config.ss.ativo==='sim');
 function ssCfg(){
   const c=S.config.ss=S.config.ss||{};
   if(c.colabId===undefined){const l=S.colabs.find(x=>x.modelo==='mensal'&&x.ativo);c.colabId=l?l.id:'';if(l&&c.salario===undefined)c.salario=num(l.mensal)}
-  const ano=new Date().getFullYear(),ref=SS_REF[ano]||SS_REF[Math.max(...Object.keys(SS_REF).map(Number))];
-  return Object.assign({horas:40,salario:ref.smn,duo:'14',regime:'real',seguro:15,renda:0,smn:ref.smn,ias:ref.ias,irsTab:'1',dep:0},c,c&&c.duo==='12_50'?{duo:'14'}:{});
+  const ref=refLegal();
+  return Object.assign({horas:40,salario:ref.smn,duo:'14',regime:'real',seguro:15,renda:0,smn:ref.smn,ias:ref.ias,irsTab:'1',dep:0},c,c&&c.duo==='12_50'?{duo:'14'}:{});   // '12_50' era uma opção antiga, já sem uso
 }
-/* Retenção na fonte de IRS 2026 (Continente) — Despacho n.º 233-A/2026 */
+/* Retenção na fonte de IRS de IRS_ANO (2026, Continente) — Despacho n.º 233-A/2026. Em cada ano novo, substituir as tabelas e o IRS_ANO. */
 const IRS_TAB={
   '1':{ad:21.43,L:[[920,0,0],[1042,.125,R=>.125*2.6*(1273.85-R)],[1108,.157,R=>.157*1.35*(1554.83-R)],[1154,.157,94.71],[1212,.212,158.18],[1819,.241,193.33],[2119,.311,320.66],[2499,.349,401.19],[3305,.3836,487.66]]},
   '3':{ad:42.86,L:[[991,0,0],[1042,.125,R=>.125*2.6*(1372.15-R)],[1108,.125,R=>.125*1.35*(1677.85-R)],[1119,.125,96.17],[1432,.1272,98.64],[1962,.157,141.32]]}};
@@ -1415,7 +1455,7 @@ function calcSS(p){
   let horas=num(p.horas);if(!(horas>0))horas=40;horas=Math.min(horas,40);
   const inteiro=horas>=40,sal=num(p.salario),seg=num(p.seguro),smn=num(p.smn),ias=num(p.ias);
   const minimo=r2(smn*horas/40);
-  const subsMes=p.duo==='12'?sal*2/12:p.duo==='12_50'?sal/12:0;
+  const subsMes=p.duo==='12'?sal*2/12:0;
   const pagoMes=r2(sal+subsMes);
   let te,tt,baseMes,baseAno,txtBase;
   if(p.regime==='real'){te=.223;tt=.11;baseMes=pagoMes;baseAno=sal*14;txtBase='salário real'}
@@ -1426,13 +1466,13 @@ function calcSS(p){
   const ssE=r2(baseMes*te),ssT=r2(baseMes*tt);
   const tab=p.irsTab||'1',ri=retIRS(sal,tab,p.dep),taxaIRS=sal>0?ri.v/sal:0;
   const irsMes=r2(ri.v+Math.floor(subsMes*taxaIRS));        // salário + duodécimos
-  const subUmaVez=p.duo==='14'?sal:p.duo==='12_50'?sal/2:0;
+  const subUmaVez=p.duo==='14'?sal:0;
   const irsSub=subUmaVez?retIRS(subUmaVez,tab,p.dep).v:0;     // cada subsídio pago à parte
   const irsAno=r2(irsMes*12+irsSub*2);
   const liquido=r2(pagoMes-ssT-irsMes),custoMes=r2(pagoMes+ssE+seg);
   const ssEAno=r2(baseAno*te),ssTAno=r2(baseAno*tt);
   const custoAno=r2(sal*14+ssEAno+seg*12),liquidoAno=r2(sal*14-ssTAno-irsAno),media=r2(custoAno/12);
-  const extraSub=p.duo==='14'?sal:p.duo==='12_50'?sal/2:0;
+  const extraSub=p.duo==='14'?sal:0;
   const extraMes=r2(extraSub+(p.regime==='real'?extraSub*te:0));
   return {horas,inteiro,sal,seg,minimo,pagoMes,te,tt,baseMes,txtBase,ssE,ssT,irsMes,irsSub,irsAno,irsOk:ri.ok,irsTab:tab,liquido,custoMes,ssEAno,ssTAno,custoAno,liquidoAno,media,extraMes,abaixo:sal>0&&sal<minimo-0.005};
 }
@@ -1460,18 +1500,18 @@ function vSS(){
     <div class="seglab">IRS da trabalhadora (para a retenção)</div>
     <div class="segs ss3">${opt('irsTab','1','Não casada','sem dependentes')}${opt('irsTab','2','Não casada','com dependentes')}${opt('irsTab','3','Casada','único titular')}</div>
     <div class="fg" style="margin-top:10px">${p.irsTab!=='1'?campo('dep','N.º de dependentes','filhos',1,''):''}${campo('seguro','Seguro de acidentes','€/mês',1,'De trabalho. Obrigatório.')}</div>
-    <details class="ss-ref"><summary class="small">Valores de referência (${new Date().getFullYear()})</summary>
+    <details class="ss-ref"><summary class="small">Valores de referência (${anoHoje()})</summary>
       <div class="fg" style="margin-top:8px">${campo('smn','Salário mínimo','€',1,'')}${campo('ias','IAS','€',0.01,'')}</div>
       <div class="small mute">Atualize em janeiro de cada ano. ${Object.entries(SS_REF).map(([a,v])=>a+': salário mínimo '+eur(v.smn)+(v.prev?' (previsto no Orçamento do Estado, falta confirmar; IAS ainda por publicar)':', IAS '+eur(v.ias))).join(' · ')}.</div></details>`;
   const res=`
     <div class="ss-hero"><div><div class="l">Custo médio por mês</div><div class="v">${eur(r.media)}</div><div class="small">custo do ano ÷ 12, já com subsídios</div></div>
-      <div><div class="l">Num mês normal</div><div class="v2">${eur(r.custoMes)}</div>${r.extraMes?`<div class="small">junho e dezembro: +${eur(r.extraMes)}</div>`:''}</div></div>
+      <div><div class="l">Num mês normal</div><div class="v2">${eur(r.custoMes)}</div>${r.extraMes?`<div class="small">${MESES[mesFer(p)].toLowerCase()} e dezembro: +${eur(r.extraMes)}</div>`:''}</div></div>
     ${c&&num(c.mensal)?`<div class="aviso-b am" style="margin-top:10px">📌 <span>Na aplicação, ${esc(c.nome)} conta <b>${eur(num(c.mensal))}/mês</b>. Com Segurança Social, subsídios e seguro, o custo médio é <b>${eur(r.media)}</b> (+${eur(r.media-num(c.mensal))}/mês).</span></div>`:''}
     <div class="ss-h-row"><h3 class="ss-h">Trabalhadora, por mês</h3><div class="tog noprint">${['sem','com'].map(v=>`<button class="${(p.verRenda||'sem')===v?'on':''}" data-a="ssOpt" data-k="verRenda" data-v="${v}">${v==='sem'?'Sem renda':'Com renda'}</button>`).join('')}</div></div><table>
       ${linha('Salário bruto pago',eur(r.pagoMes))}
       ${linha(`Base de desconto <span class="tag">${esc(r.txtBase)}</span>`,eur(r.baseMes))}
       ${linha(`Desconto da trabalhadora <span class="tag">${pct(r.tt)}</span>`,'−'+eur(r.ssT),'')}
-      ${linha(`Retenção de IRS <span class="tag">${r.irsMes?'tabela 2026':'isento'}</span>${r.irsOk?'':'<div class="small neg">Salário acima da tabela incluída: use o simulador das Finanças.</div>'}`,r.irsMes?'−'+eur(r.irsMes):'0,00 €')}
+      ${linha(`Retenção de IRS <span class="tag">${r.irsMes?'tabela '+IRS_ANO:'isento'}</span>${r.irsOk?'':'<div class="small neg">Salário acima da tabela incluída: use o simulador das Finanças.</div>'}`,r.irsMes?'−'+eur(r.irsMes):'0,00 €')}
       ${p.verRenda==='com'?linha('Líquido a receber',eur(r.liquido))+linha('Renda de casa','−'+eur(num(p.renda)))+linha('<b>Valor final (com renda)</b>','<b class="'+(r.liquido-num(p.renda)<0?'neg':'pos')+'">'+eur(r2(r.liquido-num(p.renda)))+'</b>','sub')
         :linha('<b>Líquido a receber</b> <span class="small mute">(sem renda)</span>','<b class="pos">'+eur(r.liquido)+'</b>','sub')}</table>
     <h3 class="ss-h">Empregador, por mês</h3><table>
@@ -1488,19 +1528,20 @@ function vSS(){
     <h3 class="ss-h">Residência (AIMA)</h3>
     <div class="aima-box ${r.sal>=num(p.smn)-0.004?'ok':'no'}"><b>${r.sal>=num(p.smn)-0.004?'✓ Serve para o pedido de residência':'✕ Não serve: salário abaixo do mínimo'}</b>
       <div class="small">A AIMA aceita o contrato normal e o convencional como rendimento legítimo, desde que o salário seja de pelo menos um salário mínimo (${eur(num(p.smn))} por mês) e a Segurança Social esteja em dia.${r.sal>=num(p.smn)-0.004?'':' Suba o salário para pelo menos '+eur(num(p.smn))+'.'}</div></div>
-    <p class="small mute">IRS: ${r.irsMes?`com este salário (acima de ${eur(920)} por mês) o empregador <b>tem de reter IRS</b> e entregá-lo às Finanças todos os meses.`:`até ${eur(920)} por mês não há retenção de IRS; o empregador só entrega a declaração anual (Modelo 10).`} Veja as datas em baixo. Confirme com um contabilista.</p>
+    <p class="small mute">IRS: ${r.irsMes?`com este salário (acima de ${eur(IRS_TAB['1'].L[0][0])} por mês) o empregador <b>tem de reter IRS</b> e entregá-lo às Finanças todos os meses.`:`até ${eur(IRS_TAB['1'].L[0][0])} por mês não há retenção de IRS; o empregador só entrega a declaração anual (Modelo 10).`} Veja as datas em baixo. Confirme com um contabilista.</p>
     <p class="small mute">Simulação indicativa. Não substitui a confirmação junto da Segurança Social ou de um contabilista.</p>`;
   const at=ssAtivo(),cAt=colab(p.colabId);
   const estadoC=`<div class="card ss-estado ${at?'on':'off'}"><div class="ss-estado-t"><b>Estado do contrato</b><span class="small mute">${at?`Ativo${p.inicio?' desde '+dataPT(p.inicio):''}${cAt?' · '+esc(cAt.nome):''}. Os lembretes da Segurança Social e do IRS aparecem no separador Mês, e o recibo de vencimento nos pagamentos.`:'Desativado. As contas abaixo são só uma simulação: não aparecem lembretes nem recibos.'}</span></div>
     <div class="segs ss2 ss-estado-b"><button class="seg${at?' on':''}" data-a="ssOpt" data-k="ativo" data-v="sim" aria-pressed="${at}">Ativo</button><button class="seg${at?'':' on'}" data-a="ssOpt" data-k="ativo" data-v="nao" aria-pressed="${!at}">Desativado</button></div>
     ${at?`<label class="f ss-estado-d">Início do contrato<input type="date" data-ss="inicio" value="${esc(p.inicio||'')}"></label>`:''}</div>`;
-  return estadoC+`<div class="dois ss"><div class="ss-col">${sec('ss-dados','🧾 Dados',form,{extra:(at?'<button class="btn s noprint" data-a="recibo" data-id="'+esc(p.colabId||'')+'" title="Recibo de vencimento do mês" style="background:var(--amb2);border-color:var(--amb);color:var(--amb);font-weight:700">🧾 Recibo</button>':'')+'<button class="btn p s noprint" data-a="pdfContrato" title="Guardar um resumo das possibilidades em PDF">🖨️ Imprimir</button>'})}${sec('ss-renda','🏠 Renda de casa',`
+  const avL=avisoValoresLegais();
+  return (avL?`<div class="avisos"><div class="aviso-b am">⚠️ <span>${esc(avL)}</span></div></div>`:'')+estadoC+`<div class="dois ss"><div class="ss-col">${sec('ss-dados','🧾 Dados',form,{extra:(at?'<button class="btn s noprint" data-a="recibo" data-id="'+esc(p.colabId||'')+'" title="Recibo de vencimento do mês" style="background:var(--amb2);border-color:var(--amb);color:var(--amb);font-weight:700">🧾 Recibo</button>':'')+'<button class="btn p s noprint" data-a="pdfContrato" title="Guardar um resumo das possibilidades em PDF">🖨️ Imprimir</button>'})}${sec('ss-renda','🏠 Renda de casa',`
     <div class="fg">${campo('renda','Renda de casa','€/mês',1,'Valor que a trabalhadora paga de renda por mês.')}</div>
     <div class="ss-final"><div><div class="l">Valor final por mês</div><div class="small">Líquido ${eur(r.liquido)} − renda ${eur(num(p.renda))}</div></div><div class="v ${r.liquido-num(p.renda)<0?'neg':''}">${eur(r2(r.liquido-num(p.renda)))}</div></div>`)}${vDadosRecibo(p)}</div>${sec('ss-res','📋 Resultado',res)}</div>`+`<div class="grupo sem-linha">${vEncargos(p,r)}</div>`;
 }
 function proxPag(p,r){
-  const mf=p.mesFerias!==undefined?+p.mesFerias:5,sal=r.sal,duo=p.duo,real=p.regime==='real',guia=r2(r.ssE+r.ssT);
-  const subFer=duo==='14'?sal:duo==='12_50'?sal/2:0,subNat=subFer,ssSub=v=>real?r2(v*(r.te+r.tt)):0;
+  const mf=mesFer(p),sal=r.sal,duo=p.duo,real=p.regime==='real',guia=r2(r.ssE+r.ssT);
+  const subFer=duo==='14'?sal:0,subNat=subFer,ssSub=v=>real?r2(v*(r.te+r.tt)):0;
   // próximos 12 meses
   const t=new Date(),hk=hojeK(),it=[];
   for(let i=0;i<13;i++){
@@ -1523,10 +1564,10 @@ function proxPag(p,r){
   return {porMes,meses,hk};
 }
 function vEncargos(p,r){
-  const mf=p.mesFerias!==undefined?+p.mesFerias:5;
+  const mf=mesFer(p);
   const sal=r.sal,duo=p.duo,real=p.regime==='real';
   const guia=r2(r.ssE+r.ssT);
-  const subFer=duo==='14'?sal:duo==='12_50'?sal/2:0;   // parte paga de uma vez
+  const subFer=duo==='14'?sal:0;   // pago de uma vez
   const subNat=subFer;
   const ssSub=v=>real?r2(v*(r.te+r.tt)):0;
   const linhaE=(enc,val,quando)=>`<tr><td>${enc}</td><td class="n">${val}</td><td>${quando}</td></tr>`;
@@ -1534,8 +1575,8 @@ function vEncargos(p,r){
     <tr><th>Encargo</th><th class="n">Valor</th><th>Quando pagar</th></tr>
     ${linhaE('💶 Salário'+(duo!=='14'?' (com duodécimos)':''),eur(r.pagoMes)+'<div class="small mute">por mês</div>','Todos os meses, no fim do mês. Na aplicação conta-se o <b>dia 1 do mês seguinte</b>.')}
     ${linhaE('🏛️ Segurança Social (guia)',eur(guia)+'<div class="small mute">'+eur(r.ssE)+' empregador + '+eur(r.ssT)+' descontados à trabalhadora</div>','Entre os dias <b>10 e 20 do mês seguinte</b> (em agosto, até dia 31).')}
-    ${duo!=='12'?linhaE('🏖️ Subsídio de férias',eur(subFer)+(duo==='12_50'?'<div class="small mute">a outra metade vai no salário</div>':''),'<b>Antes de a trabalhadora ir de férias</b>, salvo acordo diferente.'):linhaE('🏖️ Subsídio de férias','—','Já incluído no salário (duodécimos).')}
-    ${duo!=='12'?linhaE('🎄 Subsídio de Natal',eur(subNat)+(duo==='12_50'?'<div class="small mute">a outra metade vai no salário</div>':''),'Até <b>15 de dezembro</b>.'):linhaE('🎄 Subsídio de Natal','—','Já incluído no salário (duodécimos).')}
+    ${duo!=='12'?linhaE('🏖️ Subsídio de férias',eur(subFer),'<b>Antes de a trabalhadora ir de férias</b>, salvo acordo diferente.'):linhaE('🏖️ Subsídio de férias','—','Já incluído no salário (duodécimos).')}
+    ${duo!=='12'?linhaE('🎄 Subsídio de Natal',eur(subNat),'Até <b>15 de dezembro</b>.'):linhaE('🎄 Subsídio de Natal','—','Já incluído no salário (duodécimos).')}
     ${real&&duo!=='12'?linhaE('🏛️ Segurança Social dos subsídios',eur(ssSub(subFer))+'<div class="small mute">por cada subsídio</div>','Na guia do mês seguinte ao pagamento do subsídio.'):''}
     ${r.irsMes?linhaE('🧾 IRS retido (Finanças)',eur(r.irsMes)+'<div class="small mute">por mês'+(r.irsSub?' · '+eur(r.irsSub)+' em cada subsídio':'')+'</div>','Declaração mensal (<b>DMR</b>) até <b>dia 10 do mês seguinte</b> e pagamento do IRS retido até <b>dia 20 do mês seguinte</b>, no Portal das Finanças.')
       :linhaE('🧾 Declaração anual às Finanças (Modelo 10)','—','Uma vez por ano, até <b>10 de fevereiro</b>, com o que pagou no ano anterior (Portal das Finanças). Sem retenção de IRS, não há DMR mensal.')}
@@ -1552,7 +1593,7 @@ function vEncargos(p,r){
   const mesSel=`<label class="f" style="max-width:360px">Mês em que paga o subsídio de férias<select data-ss="mesFerias">${MESES.map((n,i)=>`<option value="${i}" ${i===mf?'selected':''}>${n}</option>`).join('')}</select></label>`;
   return sec('ss-enc','📅 Encargos e datas de pagamento do empregador',
     `<p class="small mute" style="margin-top:0">Com os dados acima${p.colabId&&colab(p.colabId)?' ('+esc(colab(p.colabId).nome)+')':''}: o que paga, quanto e até quando.</p>${tab}
-     <div class="help" style="margin-top:10px"><b>👤 E a trabalhadora?</b> Recebe rendimento de trabalho (categoria A). ${r.sal*14>8500?`Como ganha mais de 8 500 € por ano, <b>tem de entregar a declaração de IRS</b> todos os anos, entre <b>1 de abril e 30 de junho</b>.`:`Se só tiver este rendimento e ganhar até 8 500 € por ano, pode estar dispensada de entregar o IRS.`} Se o rendimento do ano ficar perto do mínimo de existência (12 880 € em 2026), paga pouco ou nada e pode receber de volta parte do IRS retido.</div>
+     <div class="help" style="margin-top:10px"><b>👤 E a trabalhadora?</b> Recebe rendimento de trabalho (categoria A). ${r.sal*14>8500?`Como ganha mais de 8 500 € por ano, <b>tem de entregar a declaração de IRS</b> todos os anos, entre <b>1 de abril e 30 de junho</b>.`:`Se só tiver este rendimento e ganhar até 8 500 € por ano, pode estar dispensada de entregar o IRS.`} Se o rendimento do ano ficar perto do mínimo de existência (${eur(refLegal().minExist)} em ${refLegal().ano}), paga pouco ou nada e pode receber de volta parte do IRS retido.</div>
      <h3 class="ss-h">Próximos pagamentos</h3>${duo!=='12'?mesSel:''}
      ${isPhone()&&cartoes.length>3?`<div class="cal-pgs">${cartoes.slice(0,3).join('')}</div><details class="mais-meses"><summary>Ver mais ${cartoes.length-3} meses ▾</summary><div class="cal-pgs">${cartoes.slice(3).join('')}</div></details>`:`<div class="cal-pgs">${lista}</div>`}
      <p class="small mute">Pagar os subsídios em duodécimos exige acordo com a trabalhadora. Prazos de referência do Código do Trabalho e da Segurança Social; confirme com um contabilista.</p>`,{plain:false});
@@ -1562,22 +1603,20 @@ const ICONE_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><re
 async function baixarIcone(){
   try{const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(ICONE_SVG);await img.decode();
     const cv=document.createElement('canvas');cv.width=cv.height=512;cv.getContext('2d').drawImage(img,0,0,512,512);
-    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
-    let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
-    if(dl){try{await dl.save({filename:'icone-cuidadoras.png',data:blob});toast('Ícone guardado')}catch(e){if(e&&e.code==='declined')return;toast('Não foi possível guardar o ícone')}}
-    else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='icone-cuidadoras.png';a.click()}
-  }catch(e){toast('Não foi possível preparar o ícone')}
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));baixarBlob(blob,'icone-cuidadoras.png');toast('Ícone descarregado')
+  }catch(e){erro('Não foi possível preparar o ícone.')}
 }
 function vCopias(){
   let h=sec('k-copia','💾 Cópia de segurança',`<p class="small">Tudo o que faz na aplicação <b>grava sozinho</b> e fica partilhado. A cópia serve só para guardar um ficheiro de segurança no seu computador ou telemóvel.</p>
     <div class="bar"><button class="btn p" data-a="exportar">💾 Descarregar cópia (.json)</button>
     <label class="btn">📂 Abrir uma cópia<input type="file" data-imp accept=".json,application/json" hidden></label></div>
-    <p class="small mute">“Abrir uma cópia” substitui os dados partilhados de todos pelos do ficheiro.</p>`);
+    <p class="small mute">“Abrir uma cópia” substitui os dados partilhados de todos pelos do ficheiro. Antes disso, a aplicação guarda uma cópia automática do estado atual.</p>
+    <div class="seglab" style="margin-top:12px">Cópias automáticas</div>${vCopiasAuto()}`);
   h+=sec('k-anexos','📎 Anexos (PDFs e fotografias)',vEspacoAnexos(),{style:'margin-top:12px'});
-  h+=sec('k-icone','📱 Instalar a app',`<div class="icone-prev"><span class="logo grande">${ICONE_SVG}</span><p class="small">${instalada()?'A app já está instalada neste aparelho.':'Instale a aplicação no telemóvel ou no computador: fica com um ícone e abre numa janela própria, como uma app.'}</p></div>
-    <div class="bar">${instalada()?'':'<button class="btn p" data-a="instalar">📱 Instalar app</button>'}<button class="btn" data-a="copiar" data-txt="${LINK_APP}" data-msg="Link copiado">🔗 Copiar link da aplicação</button><button class="btn" data-a="baixarIcone">Descarregar ícone (.png)</button></div>`,{style:'margin-top:12px'});
+  h+=sec('k-icone','📱 Instalar a aplicação',`<div class="icone-prev"><span class="logo grande">${ICONE_SVG}</span><p class="small">${instalada()?'A aplicação já está instalada neste aparelho.':'Instale a aplicação no telemóvel ou no computador: fica com um ícone e abre numa janela própria, como uma app.'}</p></div>
+    <div class="bar">${instalada()?'':'<button class="btn p" data-a="instalar">📱 Instalar a aplicação</button>'}<button class="btn" data-a="copiar" data-txt="${LINK_APP}" data-msg="Endereço copiado">🔗 Copiar o endereço da aplicação</button><button class="btn" data-a="baixarIcone">Descarregar ícone (.png)</button></div>`,{style:'margin-top:12px'});
   h+=sec('k-conta','👤 Conta',`<div class="sessao-l"><span class="small">Entrou como <b>${esc((utilizador&&utilizador.email)||'')}</b></span><button class="btn s" data-a="sair">Sair</button></div>
-    <p class="small mute">Só ${PERMITIDOS.map(esc).join(' e ')} conseguem entrar.</p>`,{style:'margin-top:12px'});
+    <p class="small mute">Só as contas autorizadas nas regras de segurança do Firebase conseguem entrar. Ao sair, os dados guardados neste aparelho são apagados.</p>`,{style:'margin-top:12px'});
   h+=sec('k-tema','🎨 Aspeto',`<div class="tema"><button data-a="tema" data-tema="light">☀️ Claro</button><button data-a="tema" data-tema="dark">🌙 Escuro</button><button data-a="tema" data-tema="auto">Automático</button></div>
     <p class="small mute">“Automático” segue o modo do telemóvel ou do computador.</p>`,{style:'margin-top:12px'});
   const hor=sec('m-horarios','⏰ Horários habituais e extras',vHorarios(),{extra:`<span class="small mute">dia normal ${esc(txHor({inicio:S.config.horarios.dia.ini,fim:S.config.horarios.dia.fim,inicio2:S.config.horarios.dia.ini2,fim2:S.config.horarios.dia.fim2}))}</span>`});
@@ -1596,11 +1635,33 @@ function vHorarios(){
 }
 
 /* ---------- modais ---------- */
-function abrir(html){document.getElementById('mbox').innerHTML=html;document.getElementById('modal').classList.add('on')}
-function fechar(){document.getElementById('modal').classList.remove('on')}
+/* janela principal (#modal) e janela por cima (#modal2, para confirmações, fotografias e avisos sem fechar a de baixo) */
+let formSujo=false,focoAntes=null,focoAntes2=null;
+const focaveis=box=>[...box.querySelectorAll('button,[href],input:not([type=hidden]):not([hidden]),select,textarea,label.btn')].filter(x=>!x.disabled&&x.offsetParent!==null);
+function ligaTitulo(box,id){const h=box.querySelector('h3');if(h)h.id=id}
+function abrir(html){const m=document.getElementById('modal'),b=document.getElementById('mbox');if(!m.classList.contains('on'))focoAntes=document.activeElement;
+  b.innerHTML=html;ligaTitulo(b,'mboxT');m.classList.add('on');formSujo=false;
+  setTimeout(()=>{if(b.contains(document.activeElement))return;const f=focaveis(b);const x=f.find(el=>/INPUT|SELECT|TEXTAREA/.test(el.tagName))||f[0];if(x&&!isPhone())x.focus({preventScroll:true})},40)}
+function fechar(){const m=document.getElementById('modal');if(!m.classList.contains('on'))return;m.classList.remove('on');formSujo=false;fechar2();
+  if(focoAntes&&document.contains(focoAntes))try{focoAntes.focus({preventScroll:true})}catch(_){}}
+/* fechar sem querer (tocar fora ou Esc) com alterações por guardar: pergunta primeiro */
+function fecharPedido(){if(formSujo)confirmar('Tem alterações que ainda não guardou. Fechar sem guardar?',()=>fechar(),'Fechar sem guardar');else fechar()}
+function abrir2(html){const m=document.getElementById('modal2'),b=document.getElementById('mbox2');focoAntes2=document.activeElement;b.innerHTML=html;ligaTitulo(b,'mbox2T');m.classList.add('on');
+  setTimeout(()=>{const f=focaveis(b);const ok=b.querySelector('.btn.p')||f[0];if(ok)ok.focus({preventScroll:true})},40)}
+function fechar2(){const m=document.getElementById('modal2');if(!m.classList.contains('on'))return;m.classList.remove('on');if(focoAntes2&&document.contains(focoAntes2))try{focoAntes2.focus({preventScroll:true})}catch(_){}}
+const janelaAberta=()=>document.getElementById('modal').classList.contains('on');
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#mbox')&&!e.target.readOnly&&e.target.type!=='file')formSujo=true});
+document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#mbox')&&e.target.type!=='file'&&!e.target.dataset.reco)formSujo=true});
+/* o Tab do teclado fica dentro da janela aberta */
+document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const m2=document.getElementById('modal2'),m=document.getElementById('modal');
+  const box=m2.classList.contains('on')?document.getElementById('mbox2'):m.classList.contains('on')?document.getElementById('mbox'):null;if(!box)return;
+  const f=focaveis(box);if(!f.length)return;const a=f[0],z=f[f.length-1];
+  if(!box.contains(document.activeElement)){e.preventDefault();a.focus();return}
+  if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
+/* confirmação: se já houver uma janela aberta, aparece por cima dela (não a fecha) */
 function confirmar(txt,fn,okTxt='Sim, apagar'){
-  confirmar._fn=fn;
-  abrir(`<h3>Confirmar</h3><p>${txt}</p><div class="bar" style="justify-content:flex-end"><button class="btn" data-a="fechar">Cancelar</button><button class="btn p" data-a="confOk">${okTxt}</button></div>`);
+  confirmar._fn=fn;const html=`<h3>Confirmar</h3><p>${txt}</p><div class="bar" style="justify-content:flex-end"><button class="btn" data-a="${janelaAberta()?'fechar2':'fechar'}">Cancelar</button><button class="btn p" data-a="confOk">${okTxt}</button></div>`;
+  if(janelaAberta())abrir2(html);else abrir(html);
 }
 function modalDia(k){
   const M=monthData(k.slice(0,7)),tp=tipoDia(k),fer=feriados(+k.slice(0,4))[k];
@@ -1608,8 +1669,8 @@ function modalDia(k){
   const ativos=S.colabs.filter(c=>c.ativo);
   const w=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'][diaSemana(k)];
   abrir(`<h3>${w}, ${dataPT(k)}</h3><div class="small mute">${TIPO[tp]}${fer?' · '+esc(fer):''}</div>
-    <div style="margin:10px 0">${ts.length?ts.map(t=>{const c=colab(t.colabId);return `<div class="turno" style="--c:${c?c.cor:'#888'}"><span class="dot"></span><span class="t">${icP(t.periodo)} <b>${esc(c?c.nome:'?')}</b> · ${c&&c.modelo==='sessao'?'1 sessão'+(t.inicio?' · '+esc(hh(t.inicio)):''):esc(PER[t.periodo||'dia'].n)+' · '+t.horas+' h'+(t.inicio?' · '+esc(txHor(t)):'')}${t.nota?' · <span class="mute">'+esc(t.nota)+'</span>':''}</span><span class="n">${eur(custoTurno(t,c))}${c&&c.modelo==='mensal'&&!PER[t.periodo||'dia'].extra&&(t.valor===''||t.valor==null)?' <span class="small mute">(no mensal)</span>':''}</span><button class="btn s" data-a="editTurno" data-id="${t.id}" title="Alterar">✎</button><button class="btn s d" data-a="delTurno" data-id="${t.id}" title="Retirar">✕</button></div>`}).join(''):'<p class="mute small">Sem turnos neste dia.</p>'}</div>
-    ${(()=>{const as=M.ajustes.filter(a=>a.data===k);return as.length?`<div class="seglab">Adiantamentos, faltas e acertos neste dia</div>`+as.map(a=>{const c=colab(a.colabId);return `<div class="turno" style="--c:${c?c.cor:'#888'}"><span class="dot"></span><span class="t">${AJI[a.tipo]} <b>${esc(c?c.nome:'?')}</b> · ${esc(AJ[a.tipo])}${a.desc&&a.desc!==AJ[a.tipo]?' · <span class="mute">'+esc(a.desc)+'</span>':''}${a.pago?' · <span class="pos">✓ '+(a.tipo==='adiant'?'entregue':'pago')+'</span>':''}</span><span class="n ${sinal(a.tipo)<0&&a.tipo!=='adiant'?'neg':''}">${a.tipo==='adiant'?'':sinal(a.tipo)<0?'−':'+'}${eur(num(a.valor))}</span><button class="btn s d" data-a="delAjD" data-k="${k}" data-id="${a.id}" title="Retirar">✕</button></div>`}).join(''):''})()}
+    <div style="margin:10px 0">${ts.length?ts.map(t=>{const c=colab(t.colabId);return `<div class="turno" style="--c:${c?c.cor:'#888'}"><span class="dot"></span><span class="t">${icP(t.periodo)} <b>${esc(c?c.nome:'?')}</b> · ${c&&c.modelo==='sessao'?'1 sessão'+(t.inicio?' · '+esc(hh(t.inicio)):''):esc(PER[t.periodo||'dia'].n)+' · '+t.horas+' h'+(t.inicio?' · '+esc(txHor(t)):'')}${t.nota?' · <span class="mute">'+esc(t.nota)+'</span>':''}</span><span class="n">${eur(custoTurno(t,c))}${c&&c.modelo==='mensal'&&!PER[t.periodo||'dia'].extra&&(t.valor===''||t.valor==null)?' <span class="small mute">(no mensal)</span>':''}</span><button class="btn s" data-a="editTurno" data-id="${t.id}" title="Alterar">✎</button><button class="btn s d" data-a="delTurno" data-id="${t.id}" title="Apagar" aria-label="Apagar">✕</button></div>`}).join(''):'<p class="mute small">Sem turnos neste dia.</p>'}</div>
+    ${(()=>{const as=M.ajustes.filter(a=>a.data===k);return as.length?`<div class="seglab">Adiantamentos, faltas e acertos neste dia</div>`+as.map(a=>{const c=colab(a.colabId);return `<div class="turno" style="--c:${c?c.cor:'#888'}"><span class="dot"></span><span class="t">${AJI[a.tipo]} <b>${esc(c?c.nome:'?')}</b> · ${esc(AJ[a.tipo])}${a.desc&&a.desc!==AJ[a.tipo]?' · <span class="mute">'+esc(a.desc)+'</span>':''}${a.pago?' · <span class="pos">✓ '+(a.tipo==='adiant'?'entregue':'pago')+'</span>':''}</span><span class="n ${sinal(a.tipo)<0&&a.tipo!=='adiant'?'neg':''}">${a.tipo==='adiant'?'':sinal(a.tipo)<0?'−':'+'}${eur(num(a.valor))}</span><button class="btn s d" data-a="delAjD" data-k="${k}" data-id="${a.id}" title="Apagar" aria-label="Apagar">✕</button></div>`}).join(''):''})()}
     <label class="f w" style="margin:8px 0 8px">Pessoa / empresa<select id="tC">${ativos.map(c=>`<option value="${c.id}" ${c.id===modalDia.cid?'selected':''}>${esc(c.nome)}</option>`).join('')}</select></label>
     <div class="bar" style="margin:0 0 12px"><button class="btn s" style="white-space:normal;text-align:left" data-a="novoAjDia" data-k="${k}">💶 Adiantamento / 🚫 falta / ⏱️ extra desta pessoa</button></div>
     <div class="card" style="background:var(--bg)"><b id="tTit">Adicionar turno</b>
@@ -1680,7 +1741,7 @@ function modalAj(cid,dataK,voltar){
 }
 
 /* ---------- ícones modernos (substituem os emojis) ---------- */
-const IC_P={"wifioff":"<path d=\"M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20\"/>","hospital":"<path d=\"M12 6v4M14 14h-4M14 18h-4M14 8h-4\"/><path d=\"M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2\"/><path d=\"M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18\"/>","flask":"<path d=\"M10 2v7.31M14 9.3V2M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0M5.52 16h12.96\"/>","paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","mail":"<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/><path d=\"m22 7-10 6L2 7\"/>","home":"<path d=\"M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>","hour":"<path d=\"M5 22h14M5 2h14M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2\"/>","cal": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/>", "doc": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6M16 13H8M16 17H8M10 9H8\"/>", "money": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>", "warn": "<path d=\"M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"/><path d=\"M12 9v4M12 17h.01\"/>", "x": "<path d=\"M18 6 6 18M6 6l12 12\"/>", "check": "<path d=\"M20 6 9 17l-5-5\"/>", "moon": "<path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"/>", "pen": "<path d=\"M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z\"/>", "sunset": "<path d=\"M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0\"/>", "sunrise": "<path d=\"M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/>", "bank": "<path d=\"M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z\"/>", "gift": "<rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5\"/>", "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>", "set": "<path d=\"M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6\"/>", "save": "<path d=\"M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z\"/><path d=\"M17 21v-8H7v8M7 3v5h8\"/>", "file": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6\"/>", "note": "<path d=\"M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z\"/><path d=\"M15 3v6h6\"/>", "pin": "<path d=\"M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z\"/>", "phone": "<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"2\"/><path d=\"M12 18h.01\"/>", "ban": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m4.9 4.9 14.2 14.2\"/>", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75\"/>", "heart": "<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/>", "folder": "<path d=\"m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2\"/>", "up": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12\"/>", "chart": "<path d=\"M3 3v18h18M18 17V9M13 17V5M8 17v-3\"/>", "clip": "<rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/>", "tel": "<path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"/>", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "minus": "<path d=\"M5 12h14\"/>", "cloud": "<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>", "down": "<path d=\"m22 17-8.5-8.5-5 5L2 7M16 17h6v-6\"/>", "scale": "<path d=\"m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2\"/>", "menu": "<path d=\"M4 6h16M4 12h16M4 18h16\"/>", "zap": "<path d=\"M13 2 3 14h9l-1 8 10-12h-9l1-8z\"/>", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0\"/>", "msg": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>", "print": "<path d=\"M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2\"/><rect x=\"6\" y=\"14\" width=\"12\" height=\"8\"/>", "bulb": "<path d=\"M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4\"/>", "shield": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/>", "user": "<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>", "palette": "<circle cx=\"13.5\" cy=\"6.5\" r=\".5\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.56-2.5 5.56-5.56C22 6.04 17.5 2 12 2z\"/>"},IC_M={"📴":"wifioff","🏥":"hospital","🧪":"flask","📎":"paperclip","✉":"mail","🏠":"home","⏰":"clock","⏱":"clock","⏳":"hour","🗓": "cal", "📅": "cal", "🧾": "doc", "💶": "money", "⚠": "warn", "✕": "x", "✗": "x", "✓": "check", "🌙": "moon", "✎": "pen", "🌇": "sunset", "🌅": "sunrise", "☀": "sun", "🏛": "bank", "🎄": "gift", "🏖": "plane", "⚙": "set", "💾": "save", "📄": "file", "📝": "note", "📌": "pin", "📱": "phone", "🚫": "ban", "👥": "users", "👪": "heart", "📂": "folder", "📤": "up", "📊": "chart", "📋": "clip", "📞": "tel", "🔗": "link", "➕": "plus", "➖": "minus", "☁": "cloud", "📉": "down", "⚖": "scale", "☰": "menu", "⚡": "zap", "🔔": "bell", "💬": "msg", "🖨": "print", "💡": "bulb", "🛡": "shield", "👤": "user", "🎨": "palette"};
+const IC_P={"undo":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 0 11H11\"/>","pill":"<path d=\"m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7ZM8.5 8.5l7 7\"/>","wifioff":"<path d=\"M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20\"/>","hospital":"<path d=\"M12 6v4M14 14h-4M14 18h-4M14 8h-4\"/><path d=\"M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2\"/><path d=\"M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18\"/>","flask":"<path d=\"M10 2v7.31M14 9.3V2M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0M5.52 16h12.96\"/>","paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","mail":"<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/><path d=\"m22 7-10 6L2 7\"/>","home":"<path d=\"M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>","hour":"<path d=\"M5 22h14M5 2h14M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2\"/>","cal": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/>", "doc": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6M16 13H8M16 17H8M10 9H8\"/>", "money": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>", "warn": "<path d=\"M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"/><path d=\"M12 9v4M12 17h.01\"/>", "x": "<path d=\"M18 6 6 18M6 6l12 12\"/>", "check": "<path d=\"M20 6 9 17l-5-5\"/>", "moon": "<path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"/>", "pen": "<path d=\"M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z\"/>", "sunset": "<path d=\"M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0\"/>", "sunrise": "<path d=\"M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/>", "bank": "<path d=\"M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z\"/>", "gift": "<rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5\"/>", "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>", "set": "<path d=\"M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6\"/>", "save": "<path d=\"M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z\"/><path d=\"M17 21v-8H7v8M7 3v5h8\"/>", "file": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6\"/>", "note": "<path d=\"M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z\"/><path d=\"M15 3v6h6\"/>", "pin": "<path d=\"M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z\"/>", "phone": "<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"2\"/><path d=\"M12 18h.01\"/>", "ban": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m4.9 4.9 14.2 14.2\"/>", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75\"/>", "heart": "<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/>", "folder": "<path d=\"m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2\"/>", "up": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12\"/>", "chart": "<path d=\"M3 3v18h18M18 17V9M13 17V5M8 17v-3\"/>", "clip": "<rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/>", "tel": "<path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"/>", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "minus": "<path d=\"M5 12h14\"/>", "cloud": "<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>", "down": "<path d=\"m22 17-8.5-8.5-5 5L2 7M16 17h6v-6\"/>", "scale": "<path d=\"m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2\"/>", "menu": "<path d=\"M4 6h16M4 12h16M4 18h16\"/>", "zap": "<path d=\"M13 2 3 14h9l-1 8 10-12h-9l1-8z\"/>", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0\"/>", "msg": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>", "print": "<path d=\"M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2\"/><rect x=\"6\" y=\"14\" width=\"12\" height=\"8\"/>", "bulb": "<path d=\"M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4\"/>", "shield": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/>", "user": "<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>", "palette": "<circle cx=\"13.5\" cy=\"6.5\" r=\".5\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.56-2.5 5.56-5.56C22 6.04 17.5 2 12 2z\"/>"},IC_M={"↩":"undo","💊":"pill","🕐":"clock","📴":"wifioff","🏥":"hospital","🧪":"flask","📎":"paperclip","✉":"mail","🏠":"home","⏰":"clock","⏱":"clock","⏳":"hour","🗓": "cal", "📅": "cal", "🧾": "doc", "💶": "money", "⚠": "warn", "✕": "x", "✗": "x", "✓": "check", "🌙": "moon", "✎": "pen", "🌇": "sunset", "🌅": "sunrise", "☀": "sun", "🏛": "bank", "🎄": "gift", "🏖": "plane", "⚙": "set", "💾": "save", "📄": "file", "📝": "note", "📌": "pin", "📱": "phone", "🚫": "ban", "👥": "users", "👪": "heart", "📂": "folder", "📤": "up", "📊": "chart", "📋": "clip", "📞": "tel", "🔗": "link", "➕": "plus", "➖": "minus", "☁": "cloud", "📉": "down", "⚖": "scale", "☰": "menu", "⚡": "zap", "🔔": "bell", "💬": "msg", "🖨": "print", "💡": "bulb", "🛡": "shield", "👤": "user", "🎨": "palette"};
 const icSvg=n=>'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+IC_P[n]+'</svg>';
 const IC_RE=new RegExp('('+Object.keys(IC_M).join('|')+')\\uFE0F?','gu');
 function iconizar(root){
@@ -1704,6 +1765,9 @@ const TIPO_C={consulta:'Consulta',tratamento:'Tratamento',internamento:'Internam
 const ehInt=c=>c&&c.tipo==='internamento',internadoAgora=c=>ehInt(c)&&!c.fim&&c.data&&c.data<=hojeK()&&c.estado!=='desmarcada';
 const diasEntre=(a,b)=>{const d=k=>{const [y,m,dd]=k.split('-').map(Number);return new Date(y,m-1,dd)};return Math.round((d(b)-d(a))/864e5)};
 const EST_C={pormarcar:'Por marcar',marcada:'Marcada',feita:'Realizada',desmarcada:'Desmarcada'};
+/* texto do estado concordante com o tipo: consulta realizada, exame realizado, análises realizadas, internamento com alta */
+const GEN_C={consulta:'a',analises:'as'};
+const estTxt=c=>{const g=GEN_C[c.tipo]||'o';if(c.estado==='feita')return c.tipo==='internamento'?'Com alta':'Realizad'+g;if(c.estado==='desmarcada')return 'Desmarcad'+g;return EST_C[c.estado]||''};
 /* exames e análises têm caixa própria; consultas e tratamentos ficam em Consultas */
 const TIPOS_EXAME=['exame','analises','outro'],ehExame=c=>TIPOS_EXAME.includes(c&&c.tipo);
 const TIPO_MED={tensao:'Tensão arterial',glicemia:'Glicemia (açúcar)',peso:'Peso',temperatura:'Temperatura',saturacao:'Saturação (O₂)',dor:'Dor (0 a 10)',outra:'Outra'};
@@ -1737,13 +1801,12 @@ function topoSaude(p){const F=SP(p).ficha,nm=nomeS(p)||PESSOAS_S[p];
 function vSaude(p){
   if(DB&&!carregado.saude)return `<div class="card" style="text-align:center;padding:30px">⏳ A carregar os dados de saúde…</div>`;
   const P=SP(p),F=P.ficha,hj=hojeK(),nm=nomeS(p)||PESSOAS_S[p];
-  const k=saudeDia[p]||hj,pid=p;
+  const k=saudeDia[p]||hj;
   // cabeçalho
   let h=topoSaude(p);
   // HOJE: tomas
   const T=tomasDoDia(P,k),reg=P.tomas[k]||{},agora=new Date(),hm=pad(agora.getHours())+':'+pad(agora.getMinutes());
   const sos=P.meds.filter(m=>medAtivo(m,k)&&m.freq==='sos');
-  const sosReg=Object.entries(reg).filter(([c])=>c.endsWith('@sos')||c.includes('@sos-'));
   let th=`<div class="s-dianav"><button class="btn s" data-a="sDia" data-p="${p}" data-d="-1">‹</button><b>${k===hj?'Hoje':esc(DSEM_S[diaSemana(k)])}, ${dataPT(k)}</b><button class="btn s" data-a="sDia" data-p="${p}" data-d="1">›</button>${k!==hj?`<button class="btn s" data-a="sDia" data-p="${p}" data-d="0">Hoje</button>`:''}</div>`;
   if(!T.length&&!sos.length)th+=`<p class="small mute">Não há medicação marcada para este dia. Acrescente-a em <b>Medicação</b>, mais abaixo.</p>`;
   if(T.length){
@@ -1841,9 +1904,9 @@ function linhaConsulta(p,P,c){const m=medicoS(P,c.medico),pm=c.estado==='pormarc
   const nmC=x=>(TIPO_C[x.tipo]||'Consulta')+(medicoS(P,x.medico)&&medicoS(P,x.medico).especialidade?' de '+medicoS(P,x.medico).especialidade:x.esp?' de '+x.esp:'');
   const iA=internadoAgora(c),txInt=ehInt(c)&&c.data?(c.fim?`Alta a ${dataPT(c.fim)} · ${Math.max(0,diasEntre(c.data,c.fim))} dia(s) internado`:iA?`Internado há ${Math.max(0,diasEntre(c.data,hojeK()))} dia(s)`:'Internamento previsto'):'';
   return `<div class="s-item${c.estado==='desmarcada'?' antigo':''}${iA?' s-int':''}" data-anx-alvo="${p}|${c.id}"><span class="s-h">${pm?`<b class="small">Por</b><span class="small">marcar</span>`:`<b>${dataPT(c.data).slice(0,5)}</b><span class="small">${DSEM_S[diaSemana(c.data)]}${c.hora?' '+hh(c.hora):''}</span>`}</span>
-    <div class="s-t"><b>${esc(TIPO_C[c.tipo]||'Consulta')}${m&&m.especialidade?' de '+esc(m.especialidade):c.esp?' de '+esc(c.esp):''}${ehExame(c)&&c.motivo?': '+esc(c.motivo):''}</b>${q?` <span class="tag">${q}</span>`:''}${c.estado&&c.estado!=='marcada'&&c.estado!=='pormarcar'?` <span class="tag off">${EST_C[c.estado]}</span>`:''}
+    <div class="s-t"><b>${esc(TIPO_C[c.tipo]||'Consulta')}${m&&m.especialidade?' de '+esc(m.especialidade):c.esp?' de '+esc(c.esp):''}${ehExame(c)&&c.motivo?': '+esc(c.motivo):''}</b>${q?` <span class="tag">${q}</span>`:''}${c.estado&&c.estado!=='marcada'&&c.estado!=='pormarcar'?` <span class="tag off">${estTxt(c)}</span>`:''}
       <div class="small mute">${[m?m.nome:'',c.local||(m&&m.local)||'',dz?'('+dz.nome+')':'',ehExame(c)?'':c.motivo||''].filter(Boolean).map(esc).join(' · ')}</div>${txInt?`<div class="small${iA?' neg':''}">🏥 ${txInt}${c.servico?' · '+esc(c.servico):''}</div>`:''}${ped?`<div class="small mute">Pedido na ${esc(nmC(ped).toLowerCase())}${ped.data?' de '+dataPT(ped.data):''}</div>`:''}${filhos.length?`<div class="small">🧪 Pediu: ${filhos.map(x=>esc(TIPO_C[x.tipo]||'Exame')+(x.motivo?' ('+esc(x.motivo)+')':'')+(x.estado==='pormarcar'?' — por marcar':x.estado==='feita'?' — feito':x.data?' — '+dataPT(x.data):'')).join('; ')}</div>`:''}${c.notas?`<div class="small">📝 ${esc(c.notas)}</div>`:''}${vAnexos(p,c)}</div>
-    <div class="s-bts"><label class="btn s" title="Anexar PDF ou fotografia (também pode arrastar o ficheiro para cima, ou colar com Ctrl+V)">📎 Anexar<input type="file" data-anx data-p="${p}" data-id="${c.id}" accept="application/pdf,image/*" multiple hidden></label>${pm&&c.estado!=='feita'&&c.estado!=='desmarcada'?`<button class="btn s p" data-a="sMarcar" data-p="${p}" data-id="${c.id}">📅 Marcar</button>`:''}${iA?`<button class="btn s p" data-a="sAlta" data-p="${p}" data-id="${c.id}">🏥 Teve alta</button>`:''}${!ehInt(c)&&(c.estado==='marcada'||(!c.estado&&!pm)||(pm&&ehExame(c)&&c.estado!=='feita'&&c.estado!=='desmarcada'))?`<button class="btn s" data-a="sFeita" data-p="${p}" data-id="${c.id}">✓ ${ehExame(c)?'Feito':'Realizada'}</button>`:''}<button class="btn s" data-a="sEditar" data-p="${p}" data-t="consultas" data-id="${c.id}">✎ Editar</button></div></div>`}
+    <div class="s-bts"><label class="btn s" title="Anexar PDF ou fotografia (também pode arrastar o ficheiro para cima, ou colar com Ctrl+V)">📎 Anexar<input type="file" data-anx data-p="${p}" data-id="${c.id}" accept="application/pdf,image/*" multiple hidden></label>${pm&&c.estado!=='feita'&&c.estado!=='desmarcada'?`<button class="btn s p" data-a="sMarcar" data-p="${p}" data-id="${c.id}">📅 Marcar</button>`:''}${iA?`<button class="btn s p" data-a="sAlta" data-p="${p}" data-id="${c.id}">🏥 Teve alta</button>`:''}${!ehInt(c)&&(c.estado==='marcada'||(!c.estado&&!pm)||(pm&&ehExame(c)&&c.estado!=='feita'&&c.estado!=='desmarcada'))?`<button class="btn s" data-a="sFeita" data-p="${p}" data-id="${c.id}">✓ ${estTxt(Object.assign({},c,{estado:'feita'}))}</button>`:''}<button class="btn s" data-a="sEditar" data-p="${p}" data-t="consultas" data-id="${c.id}">✎ Editar</button></div></div>`}
 
 /* ---------- anexos (PDF e fotografias) nas consultas e exames ----------
    O ficheiro é guardado no Firestore em pedaços (documentos anexos/<id>-0, -1, …), porque cada documento só aceita até 1 MB.
@@ -1852,9 +1915,9 @@ const ANX_MAX=10*1024*1024,ANX_PEDACO=700000,ANX_LIVRE=1024*1024*1024;
 let anxCache={},anxOcupado=false;
 const fmtTam=b=>b>=1048576?(b/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(b/1024))+' KB';
 function todosAnexos(){const L=[];['pai','mae'].forEach(p=>{const P=S.saude&&S.saude[p];if(P&&Array.isArray(P.consultas))P.consultas.forEach(c=>(c.anexos||[]).forEach(a=>L.push({p,c,a})))});return L}
-function vAnexos(p,c,volta){const A=c.anexos||[];if(!A.length)return '';const vv=volta?' data-volta="1"':'';
+function vAnexos(p,c){const A=c.anexos||[];if(!A.length)return '';
   return `<div class="anx-l">${A.map(a=>`<div class="anx"><span class="anx-n" title="${esc(a.nome)}">📎 ${esc(a.nome)}</span><span class="small mute">${fmtTam(a.tam)}</span>
-    <span class="anx-b"><button class="btn s" data-a="anxAbrir" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Abrir</button><button class="btn s" data-a="anxBaixar" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Descarregar</button><button class="btn s d" data-a="anxApagar" data-p="${p}" data-c="${c.id}" data-id="${a.id}"${vv} title="Apagar anexo">✕</button></span></div>`).join('')}</div>`}
+    <span class="anx-b"><button class="btn s" data-a="anxAbrir" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Abrir</button><button class="btn s" data-a="anxBaixar" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Descarregar</button><button class="btn s d" data-a="anxApagar" data-p="${p}" data-c="${c.id}" data-id="${a.id}" title="Apagar anexo" aria-label="Apagar o anexo ${esc(a.nome)}">✕</button></span></div>`).join('')}</div>`}
 const lerB64=b=>new Promise((ok,ko)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]||'');r.onerror=()=>ko(r.error);r.readAsDataURL(b)});
 /* fotografias grandes: reduz para no máximo 2000 px e JPEG — ficam legíveis e muito mais leves */
 async function reduzFoto(f){
@@ -1884,16 +1947,16 @@ async function lerAnexo(a){
 async function lerB64Anexo(a){let b64='';for(let i=0;i<(a.partes||1);i++){const s=await DB.doc('anexos/'+a.id+'-'+i).get();if(!s.exists)throw {code:'em-falta'};b64+=(s.data()||{}).d||''}return b64}
 async function anexar(p,cid,files){
   if(!DB||!carregado.saude){toast('Espere que os dados acabem de carregar e tente de novo.');return}
-  if(semRede||!navigator.onLine||!servidorOk){toast('Sem internet: os anexos só podem ser enviados com ligação.');return}
+  if(semRede||!navigator.onLine||!servidorOk){erro('Sem internet: os anexos só podem ser enviados com ligação.');return}
   if(anxOcupado){toast('Ainda estou a enviar o anexo anterior. Espere um pouco.');return}
   anxOcupado=true;let feitos=0;
   try{for(const f0 of files){
     const c=SP(p).consultas.find(x=>x.id===cid);if(!c)break;
-    if(!/^application\/pdf$|^image\//.test(f0.type)&&!/\.pdf$/i.test(f0.name)){toast('“'+f0.name+'” não é PDF nem fotografia.');continue}
+    if(!/^application\/pdf$|^image\//.test(f0.type)&&!/\.pdf$/i.test(f0.name)){erro('“'+f0.name+'” não é PDF nem fotografia.');continue}
     const f=await reduzFoto(f0);
-    if(f.size>ANX_MAX){abrir(`<h3>Ficheiro demasiado grande</h3><p><b>${esc(f0.name)}</b> tem ${fmtTam(f.size)}. O máximo é <b>10 MB</b> por ficheiro.</p><p class="small mute">Exames de imagem (TAC, ressonância) têm centenas de MB: anexe só o <b>relatório</b> em PDF.</p><div class="bar" style="justify-content:flex-end"><button class="btn p" data-a="fechar">OK</button></div>`);continue}
+    if(f.size>ANX_MAX){abrir2(`<h3>Ficheiro demasiado grande</h3><p><b>${esc(f0.name)}</b> tem ${fmtTam(f.size)}. O máximo é <b>10 MB</b> por ficheiro.</p><p class="small mute">Exames de imagem (TAC, ressonância) têm centenas de MB: anexe só o <b>relatório</b> em PDF.</p><div class="bar" style="justify-content:flex-end"><button class="btn p" data-a="fechar2">OK</button></div>`);continue}
     const usado=todosAnexos().reduce((t,x)=>t+x.a.tam,0);
-    if((usado+f.size)*1.37>ANX_LIVRE*0.9){toast('O espaço gratuito para anexos está quase cheio. Apague anexos antigos.');continue}
+    if((usado+f.size)*1.37>ANX_LIVRE*0.9){erro('O espaço gratuito para anexos está quase cheio. Apague anexos antigos.');continue}
     toast('A enviar “'+f.name+'”…');
     const id='x'+uid()+uid(),b64=await lerB64(f);
     const partes=await gravarPartes(id,b64,(i,n)=>{if(n>1)toast('A enviar “'+f.name+'”: '+Math.round(i/n*100)+'%')});
@@ -1903,7 +1966,7 @@ async function anexar(p,cid,files){
     anxCache[id]=f;feitos++;save();render();atualizaZona();
   }
   if(feitos)toast(feitos===1?'Anexo guardado':feitos+' anexos guardados');
-  }catch(e){toast('Não foi possível enviar o anexo'+(e&&e.code==='permission-denied'?' (sem permissão)':'')+'. Tente de novo.')}
+  }catch(e){erro('Não foi possível enviar o anexo'+(e&&e.code==='permission-denied'?' (sem permissão)':'')+'. Tente de novo.')}
   finally{anxOcupado=false}
 }
 function achaAnexo(e){const c=SP(e.dataset.p).consultas.find(x=>x.id===e.dataset.c);return c&&{c,a:(c.anexos||[]).find(x=>x.id===e.dataset.id)}}
@@ -1916,14 +1979,16 @@ const AS_ANX={
     if(janela)try{janela.document.title=a.nome;janela.document.body.innerHTML='<p style="font:16px system-ui;padding:20px">A abrir '+esc(a.nome)+'…</p>'}catch(_){}
     if(!anxCache[a.id])toast('A abrir…');
     try{const b=await lerAnexo(a),url=URL.createObjectURL(b);
-      if(img){abrir(`<h3>📎 ${esc(a.nome)}</h3><div style="text-align:center"><img src="${url}" alt="${esc(a.nome)}" style="max-width:100%;max-height:70vh;border-radius:8px"></div><div class="bar" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-a="anxBaixar" data-p="${e.dataset.p}" data-c="${e.dataset.c}" data-id="${a.id}">Descarregar</button><button class="btn p" data-a="fechar">Fechar</button></div>`);return}
+      if(img){abrir2(`<h3>📎 ${esc(a.nome)}</h3><div style="text-align:center"><img src="${url}" alt="${esc(a.nome)}" style="max-width:100%;max-height:70vh;border-radius:8px"></div><div class="bar" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-a="anxBaixar" data-p="${e.dataset.p}" data-c="${e.dataset.c}" data-id="${a.id}">Descarregar</button><button class="btn p" data-a="fechar2">Fechar</button></div>`);setTimeout(()=>URL.revokeObjectURL(url),120000);return}
       if(janela){janela.location.href=url;return}
       baixarBlob(b,a.nome)}
-    catch(err){if(janela)try{janela.close()}catch(_){}toast(err&&err.code==='em-falta'?'Este anexo já não está na base de dados.':'Não foi possível abrir o anexo.')}},
+    catch(err){if(janela)try{janela.close()}catch(_){}erro(err&&err.code==='em-falta'?'Este anexo já não está na base de dados.':'Não foi possível abrir o anexo.')}},
   anxBaixar:async e=>{const r=achaAnexo(e);if(!r||!r.a)return;if(!anxCache[r.a.id])toast('A preparar…');
-    try{baixarBlob(await lerAnexo(r.a),r.a.nome)}catch(err){toast('Não foi possível descarregar o anexo.')}},
+    try{baixarBlob(await lerAnexo(r.a),r.a.nome)}catch(err){erro('Não foi possível descarregar o anexo.')}},
   anxApagar:e=>{const r=achaAnexo(e);if(!r||!r.a)return;const {c,a}=r;
-    const volta=e.dataset.volta;confirmar(`Apagar o anexo <b>${esc(a.nome)}</b>? Deixa de estar disponível para as duas pessoas.`,()=>{c.anexos=(c.anexos||[]).filter(x=>x.id!==a.id);if(!c.anexos.length)delete c.anexos;apagarPartes(a);save();fechar();render();toast('Anexo apagado');if(volta)modalSaude(e.dataset.p,'consultas',c.id)})},
+    confirmar(`Apagar o anexo <b>${esc(a.nome)}</b>? Deixa de estar disponível para as duas pessoas.`,()=>{
+      comDesfazer('Anexo apagado',()=>{const c2=SP(e.dataset.p).consultas.find(x=>x.id===c.id);if(c2){c2.anexos=(c2.anexos||[]).filter(x=>x.id!==a.id);if(!c2.anexos.length)delete c2.anexos}},
+        ()=>{if(!todosAnexos().some(x=>x.a.id===a.id))apagarPartes(a)});atualizaZona()})},
 };
 document.addEventListener('change',e=>{const el=e.target;if(!el.matches||!el.matches('input[type=file][data-anx]')||!el.files.length)return;
   const fs=[...el.files];el.value='';anexar(el.dataset.p,el.dataset.id,fs)});
@@ -1932,9 +1997,63 @@ function vEspacoAnexos(){const L=todosAnexos(),usado=L.reduce((t,x)=>t+x.a.tam,0
     <div class="anx-barra" title="${pct.toFixed(1).replace('.',',')}% do espaço gratuito"><span style="width:${Math.max(pct,L.length?1:0)}%"></span></div>
     <p class="small mute">Ocupa cerca de ${pct<0.1&&L.length?'menos de 0,1':pct.toFixed(1).replace('.',',')}% do espaço gratuito do Firebase (1 GB). Máximo de 10 MB por ficheiro; fotografias grandes são reduzidas automaticamente.</p>`}
 
+/* ---------- cópias automáticas no Firebase ----------
+   Uma vez por dia (e antes de "Abrir uma cópia" ou "Repor"), a app guarda uma cópia completa dos dados
+   em copias/<id>-0, -1, … e a lista das cópias em app/copias. Ficam as últimas 40. Não inclui os ficheiros dos anexos. */
+const COP_MAX=40;let listaCopias=null,aCopiar=false,copiaHojeFeita='';
+const temDados=()=>S.colabs.length||Object.keys(S.meses).length||Object.keys(S.saude||{}).length;
+async function lerListaCopias(){const s=await DB.doc('app/copias').get({source:'server'});listaCopias=(s.exists&&(s.data()||{}).lista)||[];return listaCopias}
+async function fazerCopia(rotulo){
+  if(!DB||!servidorOk||!carregado.estado||!carregado.meses||!carregado.saude||!navigator.onLine||aCopiar)return false;
+  if(!temDados())return false;
+  aCopiar=true;
+  try{return await comTrava('copias',async()=>{
+    const lista=await lerListaCopias(),hj=hojeK();
+    if(!rotulo&&lista.some(x=>x.d===hj&&!x.r)){copiaHojeFeita=hj;return false}
+    const agora=new Date(),id=rotulo?hj+'-'+pad(agora.getHours())+pad(agora.getMinutes())+pad(agora.getSeconds()):hj;
+    const txt=JSON.stringify({versao:S.versao,colabs:S.colabs,config:S.config,meses:S.meses,saude:S.saude||{}});
+    const partes=await gravarPartesEm('copias/'+id,txt);
+    let nova=[{id,d:hj,h:pad(agora.getHours())+':'+pad(agora.getMinutes()),r:rotulo||'',partes,tam:txt.length,por:(utilizador&&utilizador.email)||''},...lista.filter(x=>x.id!==id)];
+    const sai=nova.slice(COP_MAX);nova=nova.slice(0,COP_MAX);
+    await DB.doc('app/copias').set({lista:nova});listaCopias=nova;
+    sai.forEach(x=>{for(let i=0;i<(x.partes||1);i++)DB.doc('copias/'+x.id+'-'+i).delete().catch(()=>{})});
+    if(!rotulo)copiaHojeFeita=hj;
+    return true})}
+  catch(e){return false}finally{aCopiar=false}
+}
+/* guardar texto grande em pedaços (o Firestore só aceita até 1 MB por documento) */
+async function gravarPartesEm(prefixo,txt){const n=Math.max(1,Math.ceil(txt.length/ANX_PEDACO));
+  for(let i=0;i<n;i++)await DB.doc(prefixo+'-'+i).set({d:txt.slice(i*ANX_PEDACO,(i+1)*ANX_PEDACO)});return n}
+async function lerPartesDe(prefixo,n){let t='';for(let i=0;i<(n||1);i++){const s=await DB.doc(prefixo+'-'+i).get({source:'server'});if(!s.exists)throw {code:'em-falta'};t+=(s.data()||{}).d||''}return t}
+function copiaDiaria(t=0){if(copiaHojeFeita===hojeK()||t>5)return;setTimeout(()=>{if(!carregado.meses||!carregado.saude)copiaDiaria(t+1);else fazerCopia()},4000)}
+const nomeCopia=x=>dataPT(x.d)+(x.h?' às '+x.h:'')+(x.r?' · '+x.r:' · automática');
+function vCopiasAuto(){
+  if(!DB)return '';
+  const L=listaCopias;
+  if(L===null){setTimeout(()=>{if(!servidorOk)return;lerListaCopias().then(()=>{const z=document.getElementById('copAuto');if(z)z.innerHTML=vCopiasAutoCorpo()}).catch(()=>{})},50)}
+  return `<div id="copAuto">${vCopiasAutoCorpo()}</div>`}
+function vCopiasAutoCorpo(){const L=listaCopias;
+  if(L===null)return `<p class="small mute">A carregar a lista de cópias automáticas…</p>`;
+  if(!L.length)return `<p class="small mute">Ainda não há cópias automáticas. A primeira é feita hoje, poucos segundos depois de abrir a aplicação com internet.</p>`;
+  return `<label class="f w">Escolha o dia (uma cópia por dia, guardada no Firebase)<select id="copSel">${L.map(x=>`<option value="${esc(x.id)}">${esc(nomeCopia(x))}</option>`).join('')}</select></label>
+    <div class="bar" style="margin-top:8px"><button class="btn" data-a="copRepor">↩️ Repor esta cópia</button><button class="btn" data-a="copBaixar">💾 Descarregar esta cópia</button></div>
+    <p class="small mute">Se alguma coisa for apagada ou alterada por engano, pode voltar ao estado de um dia anterior. Antes de repor, a aplicação guarda uma cópia do estado atual, para poder voltar atrás. Os ficheiros dos anexos não fazem parte destas cópias.</p>`}
+async function lerCopia(id){const x=(listaCopias||[]).find(c=>c.id===id);if(!x)throw {code:'em-falta'};return {x,d:JSON.parse(await lerPartesDe('copias/'+x.id,x.partes))}}
+const AS_COP={
+  copRepor:async()=>{const id=(document.getElementById('copSel')||{}).value;if(!id)return;const x=listaCopias.find(c=>c.id===id);
+    if(!navigator.onLine||!servidorOk){erro('Sem internet: para repor uma cópia é preciso ligação.');return}
+    confirmar(`Repor a cópia de <b>${esc(nomeCopia(x))}</b>? Os dados <b>de todos</b> voltam a ficar como estavam nesse momento. Antes disso, a aplicação guarda uma cópia do estado atual.`,async()=>{
+      toast('A guardar o estado atual…');await fazerCopia('antes de repor');
+      try{const {d}=await lerCopia(id);S.colabs=d.colabs||[];S.config=d.config||S.config;S.versao=d.versao||S.versao;S.meses=d.meses||{};S.saude=d.saude||{};fcache={};anxCache={};migrar();save();render();toast('Cópia reposta')}
+      catch(e){erro('Não foi possível ler esta cópia. Tente de novo com internet.')}},'Sim, repor')},
+  copBaixar:async()=>{const id=(document.getElementById('copSel')||{}).value;if(!id)return;
+    try{toast('A preparar…');const {x,d}=await lerCopia(id);baixarBlob(new Blob([JSON.stringify(d,null,1)],{type:'application/json'}),'gestao-cuidadoras-copia-'+x.id+'.json')}
+    catch(e){erro('Não foi possível descarregar esta cópia. Tente de novo com internet.')}},
+};
+
 /* ---------- arrastar e colar anexos ---------- */
 function vZona(p,c){return `<div class="anx-zt"><span>📎 <b>Anexos</b></span><label class="btn s">📎 Anexar<input type="file" data-anx data-p="${p}" data-id="${c.id}" accept="application/pdf,image/*" multiple hidden></label></div>
-  ${vAnexos(p,c,1)}<div class="small mute anx-dica">${isPhone()?'Toque em Anexar para escolher um PDF ou tirar uma fotografia.':'Arraste para aqui um PDF ou uma fotografia, ou copie o ficheiro e carregue <b>Ctrl+V</b>.'}</div>`}
+  ${vAnexos(p,c)}<div class="small mute anx-dica">${isPhone()?'Toque em Anexar para escolher um PDF ou tirar uma fotografia.':'Arraste para aqui um PDF ou uma fotografia, ou copie o ficheiro e carregue <b>Ctrl+V</b>.'}</div>`}
 function atualizaZona(){const z=document.getElementById('anxZona');if(!z)return;const [p,id]=z.dataset.anxAlvo.split('|'),c=SP(p).consultas.find(x=>x.id===id);if(c)z.innerHTML=vZona(p,c)}
 const temFicheiros=dt=>!!dt&&[...(dt.types||[])].includes('Files');
 let anxSobre=null,anxRato=null;
@@ -2048,6 +2167,7 @@ function guardarS(irMedico){
 }
 const AS={
   ...AS_ANX,
+  ...AS_COP,
   sNovo:e=>modalSaude(e.dataset.p,e.dataset.t,null,e.dataset.g==='exame'?{tipo:'analises',estado:'pormarcar'}:e.dataset.g==='consulta'?{tipo:'consulta',estado:'marcada'}:e.dataset.g==='internamento'?{tipo:'internamento',estado:'marcada'}:null),
   sAlta:e=>{const P=SP(e.dataset.p),c=P.consultas.find(x=>x.id===e.dataset.id);if(!c)return;
     confirmar(`Registar a <b>alta hoje</b> (${dataPT(hojeK())})? Depois pode corrigir a data e juntar a nota de alta.`,()=>{c.fim=hojeK();c.estado='feita';save();fechar();render();toast('Alta registada');setTimeout(()=>modalSaude(e.dataset.p,'consultas',c.id),300)},'Sim, teve alta')},
@@ -2056,11 +2176,13 @@ const AS={
   sGuardar:()=>guardarS(),
   sApagar:()=>{const {p,t,id}=SF,P=SP(p),x=P[t].find(x=>x.id===id);if(!x)return;
     const nA=(x.anexos||[]).length;
-    confirmar(`Apagar <b>${esc(x.nome||x.valor||TIPO_C[x.tipo]||'')}</b>${t==='meds'?'? Se deixou de o tomar, é melhor usar <b>Terminar</b> para ficar no histórico':''}${nA?` e ${nA===1?'o anexo':'os '+nA+' anexos'}`:''}?`,()=>{P[t]=P[t].filter(y=>y.id!==id);(x.anexos||[]).forEach(a=>apagarPartes(a));
-      if(t==='medicos')['doencas','meds','consultas'].forEach(k=>P[k].forEach(y=>{if(y.medico===id)y.medico=''}));
-      if(t==='doencas')['meds','consultas'].forEach(k=>P[k].forEach(y=>{if(y.doenca===id)y.doenca=''}));
-      if(t==='consultas')P.consultas.forEach(y=>{if(y.pedido===id)y.pedido=''});
-      save();fechar();render();toast('Apagado')})},
+    confirmar(`Apagar <b>${esc(x.nome||x.valor||TIPO_C[x.tipo]||'')}</b>${t==='meds'?'? Se deixou de o tomar, é melhor usar <b>Terminar</b> para ficar no histórico':''}${nA?` e ${nA===1?'o anexo':'os '+nA+' anexos'}`:''}?`,()=>{fechar();
+      comDesfazer('Apagado',()=>{const P2=SP(p);P2[t]=P2[t].filter(y=>y.id!==id);
+        if(t==='medicos')['doencas','meds','consultas'].forEach(k=>P2[k].forEach(y=>{if(y.medico===id)y.medico=''}));
+        if(t==='doencas')['meds','consultas'].forEach(k=>P2[k].forEach(y=>{if(y.doenca===id)y.doenca=''}));
+        if(t==='consultas')P2.consultas.forEach(y=>{if(y.pedido===id)y.pedido=''})},
+        /* os ficheiros dos anexos só são apagados quando já não é possível desfazer */
+        ()=>{if(!SP(p)[t].some(y=>y.id===id))(x.anexos||[]).forEach(a=>apagarPartes(a))})})},
   sMaisHora:e=>{const w=document.getElementById('sHoras');if(!w)return;const h=e.dataset.h||'';
     if(h&&[...w.querySelectorAll('input')].some(i=>i.value===h))return;
     const vazio=[...w.querySelectorAll('input')].find(i=>!i.value);if(vazio&&h){vazio.value=h;return}
@@ -2074,7 +2196,7 @@ const AS={
   sTerminar:e=>{const P=SP(e.dataset.p),m=P.meds.find(x=>x.id===e.dataset.id);if(!m)return;
     confirmar(`<b>${esc(m.nome)}</b> deixa de ser tomado a partir de amanhã. Fica guardado em “Medicação que já terminou”.`,()=>{m.fim=hojeK();save();fechar();render();toast('Medicamento terminado')},'Sim, terminar')},
   sFeita:e=>{const P=SP(e.dataset.p),c=P.consultas.find(x=>x.id===e.dataset.id);if(!c)return;c.estado='feita';save();render();
-    toast(ehExame(c)?'Marcado como feito':'Marcada como realizada');setTimeout(()=>modalSaude(e.dataset.p,'consultas',c.id),300)},
+    toast(estTxt(c));setTimeout(()=>modalSaude(e.dataset.p,'consultas',c.id),300)},
   sPdf:e=>pdfSaude(e.dataset.p),
 };
 function limpaTomas(P){const lim=dkey(addD(new Date(),-400));Object.keys(P.tomas).forEach(k=>{if(k<lim)delete P.tomas[k]})}
@@ -2087,10 +2209,9 @@ function avisosSaude(){const L=[],hj=hojeK(),lim=dkey(addD(new Date(),7));
   return L}
 async function pdfSaude(p){
   toast('A preparar a ficha…');
-  try{await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
-  catch(e){toast('Sem ligação: não foi possível preparar o PDF');return}
+  const jsPDF=await prepPDF();if(!jsPDF)return;
   const P=SP(p),F=P.ficha,hj=hojeK(),T=s=>semEmoji(String(s||'')).replace(/[  ]/g,' ');
-  const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+  const desenha=k=>{const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),cheio=k<1,muito=k<.7;
   const verde=[47,107,90];let y=17;
   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('Ficha de saúde',14,y);doc.setFontSize(10);doc.setTextColor(110);doc.setFont('helvetica','normal');doc.text('Atualizada em '+dataPT(hj),W-14,y,{align:'right'});doc.setTextColor(0);
   y+=7;doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text(T(F.nome||PESSOAS_S[p]),14,y);
@@ -2100,9 +2221,9 @@ async function pdfSaude(p){
   const L2=[F.medFamilia?'Médico de família: '+F.medFamilia:'',F.centro?'Centro de saúde: '+F.centro:'',F.emerg?'Emergência: '+F.emerg:''].filter(Boolean).join('   ·   ');
   if(L2){doc.splitTextToSize(T(L2),W-28).forEach(l=>{doc.text(l,14,y);y+=4.5})}
   if(F.alergias){y+=1;doc.setFillColor(251,234,230);const ls=doc.splitTextToSize(T('ALERGIAS: '+F.alergias),W-34);doc.roundedRect(14,y-3.5,W-28,ls.length*4.4+3,1.5,1.5,'F');doc.setTextColor(179,64,46);doc.setFont('helvetica','bold');ls.forEach(l=>{doc.text(l,17,y+0.5);y+=4.4});doc.setTextColor(0);doc.setFont('helvetica','normal');y+=2}
-  const tit=t=>{y+=4;doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(...verde);doc.text(t,14,y);doc.setTextColor(0);y+=1.5};
+  const tit=t=>{y+=4*k;doc.setFont('helvetica','bold');doc.setFontSize(10.5*k);doc.setTextColor(...verde);doc.text(t,14,y);doc.setTextColor(0);y+=1.5};
   const tab=(head,body,cs)=>{doc.autoTable({startY:y,head:[head],body:body.length?body:[[{content:'Nada registado.',colSpan:head.length}]],theme:'grid',margin:{left:14,right:14,bottom:14},
-    styles:{fontSize:8,cellPadding:1.2,lineColor:[228,222,212],lineWidth:0.2,valign:'top'},headStyles:{fillColor:verde,textColor:255},columnStyles:cs||{}});y=doc.lastAutoTable.finalY+1};
+    styles:{fontSize:8*k,cellPadding:1.2*k,lineColor:[228,222,212],lineWidth:0.2,valign:'top'},headStyles:{fillColor:verde,textColor:255},columnStyles:cs||{}});y=doc.lastAutoTable.finalY+1};
   const atuais=P.meds.filter(m=>!m.fim||m.fim>=hj).sort((a,b)=>(a.tipo==='temp')-(b.tipo==='temp')||a.nome.localeCompare(b.nome));
   tit('Medicação atual');
   tab(['Medicamento','Dose','Quando','Para quê','Receitado por','Desde / até'],atuais.map(m=>{const dz=P.doencas.find(d=>d.id===m.doenca);
@@ -2111,21 +2232,23 @@ async function pdfSaude(p){
   tit('Doenças');
   tab(['Doença','Tipo','Diagnóstico','Médico','Notas'],ativas.map(d=>[T(d.nome),d.tipo==='temp'?'Temporária':'Crónica',d.diag?dataPT(d.diag):'',T(nomeMedico(P,d.medico)),T(d.notas)]),{0:{fontStyle:'bold',cellWidth:40},1:{cellWidth:20},2:{cellWidth:22}});
   const pass=P.doencas.filter(d=>d.fim);if(pass.length){doc.setFontSize(8);doc.setTextColor(100);doc.splitTextToSize(T('Doenças passadas: '+pass.map(d=>d.nome+' ('+(d.diag?dataPT(d.diag).slice(3):'?')+' a '+dataPT(d.fim).slice(3)+')').join('; ')),W-28).forEach(l=>{y+=3.6;doc.text(l,14,y)});doc.setTextColor(0);y+=1}
-  const ints=P.consultas.filter(c=>ehInt(c)&&c.estado!=='desmarcada'&&c.data&&c.data<=hj).sort((a,b)=>a.data<b.data?1:-1).slice(0,6);
+  const ints=P.consultas.filter(c=>ehInt(c)&&c.estado!=='desmarcada'&&c.data&&c.data<=hj).sort((a,b)=>a.data<b.data?1:-1).slice(0,muito?2:cheio?3:6);
   if(ints.length){tit('Internamentos');tab(['Entrada','Alta','Local / serviço','Motivo','Notas'],ints.map(c=>[dataPT(c.data),c.fim?dataPT(c.fim)+' ('+Math.max(0,diasEntre(c.data,c.fim))+' d)':'Internado',T([c.local,c.servico].filter(Boolean).join(' - ')),T(c.motivo),T(c.notas)]),{0:{cellWidth:20},1:{cellWidth:26},3:{cellWidth:40}})}
-  const prox=proximasConsultas(P,6).filter(c=>!ehInt(c)||c.data>hj);
+  const prox=proximasConsultas(P,muito?3:cheio?4:6).filter(c=>!ehInt(c)||c.data>hj);
   if(prox.length){tit('Próximas consultas e exames');tab(['Data','Hora','O quê','Médico','Local'],prox.map(c=>{const m=medicoS(P,c.medico);return [dataPT(c.data),hh(c.hora||''),T((TIPO_C[c.tipo]||'Consulta')+(m&&m.especialidade?' de '+m.especialidade:c.esp?' de '+c.esp:'')+(ehExame(c)&&c.motivo?': '+c.motivo:'')),T(m?m.nome:''),T(c.local||(m&&m.local))]}),{0:{cellWidth:20},1:{cellWidth:13}})}
   const pmE=P.consultas.filter(c=>ehExame(c)&&c.estado==='pormarcar');
   if(pmE.length){tit('Exames e análises por marcar');tab(['O quê','Motivo','Pedido por','Notas'],pmE.map(c=>{const m=medicoS(P,c.medico),pd=c.pedido&&P.consultas.find(x=>x.id===c.pedido),mp=pd&&medicoS(P,pd.medico);return [T((TIPO_C[c.tipo]||'Exame')+(m&&m.especialidade?' de '+m.especialidade:c.esp?' de '+c.esp:'')),T(c.motivo),T(mp?mp.nome:pd?(TIPO_C[pd.tipo]||'Consulta')+(pd.esp?' de '+pd.esp:'')+' ('+dataPT(pd.data)+')':(m?m.nome:'')),T(c.notas)]}),{0:{fontStyle:'bold',cellWidth:40}})}
-  if(P.medicos.length){tit('Médicos');tab(['Nome','Especialidade','Local','Contacto'],P.medicos.map(m=>[T(m.nome),T(m.especialidade),T(m.local),T([m.tel,m.email].filter(Boolean).join(' · '))]))}
-  const mds=P.medicoes.slice().sort((a,b)=>(b.data+(b.hora||''))<(a.data+(a.hora||''))?-1:1).slice(0,8);
-  if(mds.length&&y<H-40){tit('Últimas medições');tab(['Data','O quê','Valor','Notas'],mds.map(x=>[dataPT(x.data)+(x.hora?' '+hh(x.hora):''),T(TIPO_MED[x.tipo]),T(x.valor+' '+(UN_MED[x.tipo]||'')),T(x.notas)]),{0:{cellWidth:28}})}
+  if(P.medicos.length&&!muito){tit('Médicos');tab(['Nome','Especialidade','Local','Contacto'],P.medicos.map(m=>[T(m.nome),T(m.especialidade),T(m.local),T([m.tel,m.email].filter(Boolean).join(' · '))]))}
+  const mds=P.medicoes.slice().sort((a,b)=>(b.data+(b.hora||''))<(a.data+(a.hora||''))?-1:1).slice(0,cheio?4:8);
+  if(mds.length&&!muito&&y<H-40){tit('Últimas medições');tab(['Data','O quê','Valor','Notas'],mds.map(x=>[dataPT(x.data)+(x.hora?' '+hh(x.hora):''),T(TIPO_MED[x.tipo]),T(x.valor+' '+(UN_MED[x.tipo]||'')),T(x.notas)]),{0:{cellWidth:28}})}
   if(F.notas&&y<H-24){tit('Outras notas');doc.setFontSize(8.5);doc.splitTextToSize(T(F.notas),W-28).slice(0,6).forEach(l=>{y+=3.8;doc.text(l,14,y)})}
+  return doc};
+  /* tem de caber numa folha A4: se não couber, letra mais pequena e só os registos mais recentes */
+  let doc=desenha(1);for(const k of [.88,.76,.66,.58]){if(doc.getNumberOfPages()<=1)break;doc=desenha(k)}
+  const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
   const np=doc.getNumberOfPages();for(let i=1;i<=np;i++){doc.setPage(i);doc.setFontSize(7.5);doc.setTextColor(130);doc.text('Registo feito pela família. Confirme sempre a medicação com o médico ou o farmacêutico.',14,H-9);doc.text('jprocha-pt · Gestão de Cuidadoras',W-14,H-9,{align:'right'})}
   const fn='ficha-saude-'+(F.nome||PESSOAS_S[p]).toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+hj+'.pdf';
-  let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
-  if(dl){try{await dl.save({filename:fn,data:doc.output('blob')});toast('Ficha guardada: '+fn)}catch(e){if(e&&e.code==='declined')return;toast('Não foi possível guardar a ficha')}}
-  else{try{doc.save(fn)}catch(e){toast('Neste ecrã não é possível descarregar ficheiros')}}
+  guardarPDF(doc,fn,'Ficha guardada');
 }
 /* ---------- Relatório do mês por pessoa ---------- */
 let RELO=null;
@@ -2183,10 +2306,9 @@ function desenhaRelatorio(){
 }
 async function pdfRelatorio(){
   toast('A preparar o relatório…');
-  try{await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
-  catch(e){toast('Sem ligação: não foi possível preparar o PDF');return}
+  const jsPDF=await prepPDF();if(!jsPDF)return;
   const d=dadosRelatorio(RELO.cid,RELO.y,RELO.m),c=d.c,r=d.r,T=s=>semEmoji(String(s)).replace(/[  ]/g,' ');
-  const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
   const verde=[47,107,90];let y=17;
   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('Relatório de atividade',14,y);
   doc.setFontSize(13);doc.setTextColor(...verde);doc.text(MESES[d.m]+' '+d.y,W-14,y,{align:'right'});doc.setTextColor(0);
@@ -2223,9 +2345,7 @@ async function pdfRelatorio(){
   doc.text('[extra] = soma ao pagamento · Fundo amarelo: adiantamento (pagamento antecipado) · Fundo vermelho: falta ou desconto',14,H-13);
   doc.text('jprocha-pt · Gestão de Cuidadoras',W-14,H-9,{align:'right'});
   const fn='relatorio-'+(c.nome||'').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-')+'-'+d.key+'.pdf';
-  let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
-  if(dl){try{await dl.save({filename:fn,data:doc.output('blob')});toast('Relatório guardado: '+fn)}catch(e){if(e&&e.code==='declined')return;toast('Não foi possível guardar o relatório')}}
-  else{try{doc.save(fn)}catch(e){toast('Neste ecrã não é possível descarregar ficheiros')}}
+  guardarPDF(doc,fn,'Relatório guardado');
 }
 /* ---------- Recibo de vencimento ---------- */
 function vDadosRecibo(p){
@@ -2242,7 +2362,7 @@ function vDadosRecibo(p){
 }
 function dadosRecibo(cid,y,m,o){
   const p=ssCfg(),r=calcSS(p),c=colab(cid),K=mkey(y,m),M=monthData(K),rc=c?calcColab(c,M):null;
-  const mf=p.mesFerias!==undefined?+p.mesFerias:5,sal=r.sal,tab=r.irsTab,taxa=sal>0?retIRS(sal,tab,p.dep).v/sal:0;
+  const mf=mesFer(p),sal=r.sal,tab=r.irsTab,taxa=sal>0?retIRS(sal,tab,p.dep).v/sal:0;
   const ab=[],de=[];
   ab.push(['Vencimento base',sal]);
   if(p.duo==='12'){ab.push(['Duodécimo do subsídio de férias',r2(sal/12)]);ab.push(['Duodécimo do subsídio de Natal',r2(sal/12)])}
@@ -2304,10 +2424,9 @@ document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||!el.dat
   desenhaModalRecibo()});
 async function pdfRecibo(){
   toast('A preparar o recibo…');
-  try{await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
-  catch(e){toast('Sem ligação: não foi possível preparar o PDF');return}
+  const jsPDF=await prepPDF();if(!jsPDF)return;
   const d=dadosRecibo(RECO.cid,RECO.y,RECO.m,RECO),R0=S.config.recibo||{},c=d.c,p=d.p,E=v=>eur(v).replace(/ /g,' ');
-  const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
   const verde=[47,107,90],ln=(t,x,y,sz,b,cor)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...(cor||[0,0,0]));doc.text(String(t),x,y)};
   const vazio='________________';
   const ult=new Date(d.y,d.m+1,0).getDate(),per=`01/${String(d.m+1).padStart(2,'0')}/${d.y} a ${ult}/${String(d.m+1).padStart(2,'0')}/${d.y}`;
@@ -2352,20 +2471,27 @@ async function pdfRecibo(){
   ln('Documento emitido nos termos do artigo 276.º do Código do Trabalho. '+(RECO.digital?'Guarde o email enviado e a resposta da trabalhadora.':'Guarde uma cópia assinada.'),14,H-14,7.5,false,[130,130,130]);
   doc.text('jprocha-pt · Gestão de Cuidadoras',W-14,H-9,{align:'right'});
   const fn='recibo-'+(RECO.digital?'email-':'')+(c.nome||'').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-')+'-'+mkey(d.y,d.m)+'.pdf';
-  let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
-  if(dl){try{await dl.save({filename:fn,data:doc.output('blob')});toast('Recibo guardado: '+fn)}catch(e){if(e&&e.code==='declined')return;toast('Não foi possível guardar o recibo')}}
-  else{try{doc.save(fn)}catch(e){toast('Neste ecrã não é possível descarregar ficheiros')}}
+  guardarPDF(doc,fn,'Recibo guardado');
 }
 /* ---------- PDF do contrato ---------- */
-function carregaJs(src){return new Promise((ok,ko)=>{if(document.querySelector('script[src="'+src+'"]'))return ok();const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)})}
+/* carrega uma biblioteca da internet; se falhar, a próxima tentativa volta a tentar (antes ficava "presa") */
+function carregaJs(src){return new Promise((ok,ko)=>{let e=document.querySelector('script[src="'+src+'"]');
+  if(e&&e.dataset.ok){ok();return}
+  if(!e){e=document.createElement('script');e.src=src;document.head.appendChild(e)}
+  e.addEventListener('load',()=>{e.dataset.ok='1';ok()},{once:true});
+  e.addEventListener('error',()=>{e.remove();ko(new Error('falhou: '+src))},{once:true})})}
+/* PDFs: biblioteca jsPDF 4 + tabelas (jspdf-autotable 5), carregadas só quando são precisas */
+const PDF_LIBS=['https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js','https://cdn.jsdelivr.net/npm/jspdf-autotable@5.0.9/dist/jspdf.plugin.autotable.min.js'];
+async function prepPDF(){
+  try{for(const u of PDF_LIBS)await carregaJs(u)}catch(e){erro('Sem ligação à internet: não foi possível preparar o PDF. Tente de novo quando tiver internet.');return null}
+  if(!window.jspdf||!window.jspdf.jsPDF||!window.jspdf.jsPDF.API.autoTable){erro('Não foi possível preparar o PDF. Recarregue a aplicação e tente de novo.');return null}
+  return window.jspdf.jsPDF}
+function guardarPDF(doc,fn,msg){try{doc.save(fn);toast(msg+': '+fn)}catch(e){erro('Não foi possível descarregar o ficheiro '+fn+'.')}}
 const semEmoji=t=>String(t).replace(/<[^>]+>/g,'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,'').replace(/[−–]/g,'-').replace(/\s+/g,' ').trim();
 async function pdfContrato(){
   toast('A preparar o PDF…');
-  try{
-    await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-    await carregaJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
-  }catch(e){toast('Não foi possível preparar o PDF (sem ligação?). A abrir a impressão…');window.print();return}
-  const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const jsPDF=await prepPDF();if(!jsPDF)return;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
   const p=ssCfg(),r=calcSS(p),c=colab(p.colabId),nome=c?c.nome:'(sem pessoa escolhida)',E=v=>eur(v).replace(/ /g,' ');
   const verde=[47,107,90],azul=[37,99,165],W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();let y=16;
   const txt=(t,sz,cor,bold,x=14)=>{doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...(cor||[0,0,0]));doc.splitTextToSize(t,W-14-x).forEach(l=>{doc.text(l,x,y);y+=sz*0.42})};
@@ -2374,12 +2500,12 @@ async function pdfContrato(){
   const pr=p.duo==='14'?'14 meses':'12 meses (duodécimos)';
   txt(`Pessoa: ${nome}  ·  ${r.horas} h/semana${r.inteiro?' (tempo inteiro)':''}  ·  Salário bruto: ${E(r.sal)}/mês`,10.5);y+=0.5;
   txt(`IRS: ${IRS_NOME[r.irsTab]}${r.irsTab!=='1'&&num(p.dep)?' ('+num(p.dep)+' dep.)':''}  ·  Seguro: ${E(r.seg)}/mês  ·  Renda de casa: ${E(num(p.renda))}/mês`,10.5);y+=0.5;
-  txt(`Valores de referência: salário mínimo ${E(num(p.smn))} · IAS ${E(num(p.ias))} · tabelas de IRS 2026.${r.abaixo?'  ATENÇÃO: salário abaixo do mínimo legal para estas horas ('+E(r.minimo)+').':''}`,8.5,[110,110,110]);
+  txt(`Valores de referência: salário mínimo ${E(num(p.smn))} · IAS ${E(num(p.ias))} · tabelas de IRS ${IRS_ANO}.${r.abaixo?'  ATENÇÃO: salário abaixo do mínimo legal para estas horas ('+E(r.minimo)+').':''}`,8.5,[110,110,110]);
   // 1) comparação das 6 possibilidades (opções em colunas)
   const ops=[];for(const reg of ['real','conv'])for(const duo of ['14','12']){
     const x=calcSS(Object.assign({},p,{regime:reg,duo}));
     ops.push({reg,duo,x,esc:reg===p.regime&&duo===p.duo,nome:(reg==='real'?'Real':'Conv.')+' · '+(duo==='14'?'14 meses':'12 meses (duodécimos)')})}
-  const smnRef=num(p.smn)||920,mfP=p.mesFerias!==undefined?+p.mesFerias:5,mAb=i=>MESES[i].slice(0,3).toLowerCase()+'.';
+  const smnRef=num(p.smn)||refLegal().smn,mfP=mesFer(p),mAb=i=>MESES[i].slice(0,3).toLowerCase()+'.';
   const aimaOp=o=>o.x.sal<smnRef-0.004?{n:0,t:'NÃO\nsalário abaixo do mínimo ('+E(smnRef)+')'}
     :{n:2,t:'SIM'};
   const minC=Math.min(...ops.map(o=>o.x.custoAno)),maxL=Math.max(...ops.map(o=>o.x.liquidoAno));
@@ -2437,16 +2563,15 @@ async function pdfContrato(){
     const h2=caixa(14+bw+5,cC,tC,'CONTRATO CONVENCIONAL (regime convencional)',['Segurança Social sobre um valor fixo (IAS, '+E(num(p.ias))+'): 18,9% + 9,4%; os subsídios não descontam.','NÃO dá subsídio de desemprego.','Baixa mais baixa (calculada sobre o IAS).','Reforma mais baixa (calculada sobre o IAS).','Mais barato para o empregador e mais líquido para a trabalhadora.']);
     y+=Math.max(h1,h2)+3.5;
   }
-  {const o14=ops.filter(o=>o.x.extraMes);txt('"> (escolhida)" e coluna mais escura = opção escolhida na aplicação. 14 meses = subsídios de férias e de Natal pagos à parte; 12 meses (duodécimos) = subsídios pagos aos bocados todos os meses.'+'',7.5,[100,100,100]);}
+  {txt('"> (escolhida)" e coluna mais escura = opção escolhida na aplicação. 14 meses = subsídios de férias e de Natal pagos à parte; 12 meses (duodécimos) = subsídios pagos aos bocados todos os meses.'+'',7.5,[100,100,100]);}
   // quadro: qual o mais vantajoso
   const lista=a=>{const g={};a.forEach(o=>{(g[o.reg]=g[o.reg]||[]).push(o)});return Object.entries(g).map(([reg,L])=>(reg==='real'?'regime real':'regime convencional')+(L.length===2?' (qualquer forma de pagar os subsídios dá praticamente o mesmo no ano)':' com '+L.map(o=>o.duo==='14'?'14 meses':'duodécimos').join(' ou '))).join('; ')};
   const bE=ops.filter(o=>o.bEmp),bT=ops.filter(o=>o.bTrab),bP=ops.filter(o=>o.bProt);
   const pior=Math.max(...ops.map(o=>o.x.custoAno)),difE=r2(pior-minC);
   const realMin=Math.min(...reais.map(o=>o.x.custoAno));
-  y+=3;const y0=y;
+  y+=3;
   const bloco=(cor,tit,t)=>{const ys=y;txt(tit,9.5,cor,true,19);y+=0.3;txt(t,8.5,[40,40,40],false,19);doc.setFillColor(...cor);doc.rect(14,ys-3.8,1.4,y-ys+1,'F');y+=2.6};
   doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(0);doc.text('Qual é a opção mais vantajosa?',14,y);y+=5.5;
-  const ind=t=>t;
   const rg=a=>{const g=[...new Set(a.map(o=>o.reg))];return g.map(x=>x==='real'?'contrato normal (regime real)':'contrato convencional').join(' ou ')};
   bloco(verde,'Para o empregador',`Mais barato: ${rg(bE)}, ${E(minC)} por ano (${E(r2(minC/12))} por mês em média). Poupa ${E(r2(realMin-minC))} por ano face ao regime real.`);
   bloco(azul,'Para a trabalhadora (dinheiro)',`Mais líquido: ${rg(bT)}, até ${E(maxL)} por ano (${E(r2(maxL/12))} por mês em média), porque desconta menos.`);
@@ -2456,9 +2581,7 @@ async function pdfContrato(){
   doc.setTextColor(0);
   const np=doc.getNumberOfPages();for(let i=1;i<=np;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(140);doc.text('jprocha-pt · Gestão de Cuidadoras',14,H-8);doc.text('página '+i+' de '+np,W-14,H-8,{align:'right'})}
   const fn='contrato-'+(c?c.nome.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-'):'simulacao')+'-'+hojeK()+'.pdf';
-  let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
-  if(dl){try{await dl.save({filename:fn,data:doc.output('blob')});toast('PDF guardado: '+fn)}catch(e){if(e&&e.code==='declined')return;toast('Não foi possível guardar o PDF')}}
-  else{window.__ultimoPDF=doc.output('blob');try{doc.save(fn)}catch(e){toast('Neste ecrã não é possível descarregar ficheiros')}}
+  guardarPDF(doc,fn,'PDF guardado');
 }
 /* ---------- ações ---------- */
 function mudaMes(n){cur.m+=n;if(cur.m<0){cur.m=11;cur.y--}if(cur.m>11){cur.m=0;cur.y++}render()}
@@ -2470,15 +2593,12 @@ async function exportar(com){
       <div class="bar" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-a="exportarSem">Só os dados</button><button class="btn p" data-a="exportarCom">Dados e anexos</button></div>`);return}
   let obj=S;
   if(com&&L.length){fechar();toast('A juntar os anexos…');const AD={};
-    try{for(const x of L)AD[x.a.id]=await lerB64Anexo(x.a)}catch(e){toast('Não foi possível ler todos os anexos. Tente de novo.');return}
+    try{for(const x of L)AD[x.a.id]=await lerB64Anexo(x.a)}catch(e){erro('Não foi possível ler todos os anexos. Tente de novo.');return}
     obj=Object.assign({},S,{anexosDados:AD})}
   else if(com===false)fechar();
   const nome='gestao-cuidadoras-'+hojeK()+(com&&L.length?'-com-anexos':'')+'.json',txt=JSON.stringify(obj,null,com&&L.length?0:1);
-  let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
-  if(!dl){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-    S.config.ultimaCopia=hojeK();save();render();toast('Cópia guardada: '+nome)}catch(e){toast('Não foi possível descarregar a cópia')}return}
-  try{await dl.save({filename:nome,data:txt});S.config.ultimaCopia=hojeK();save();render();toast('Cópia guardada: '+nome)}
-  catch(e){if(e&&e.code==='declined')return;toast(e&&e.code==='rate_limited'?'Já há um pedido aberto. Tente daqui a pouco.':'Não foi possível descarregar a cópia')}
+  try{baixarBlob(new Blob([txt],{type:'application/json'}),nome);S.config.ultimaCopia=hojeK();save();render();toast('Cópia guardada: '+nome)}
+  catch(e){erro('Não foi possível descarregar a cópia.')}
 }
 function copiar(t,msg){
   const ok=()=>toast(msg||('IBAN copiado: '+fmtIban(t)));
@@ -2487,17 +2607,15 @@ function copiar(t,msg){
 }
 
 function temaAtual(){try{return localStorage.getItem(KEY+'.tema')||'auto'}catch(_){return 'auto'}}
-const temaHost=document.documentElement.getAttribute('data-theme');
-function aplicaTema(t){if(t==='auto'){if(temaHost)document.documentElement.setAttribute('data-theme',temaHost);else document.documentElement.removeAttribute('data-theme')}else document.documentElement.setAttribute('data-theme',t)}
+function aplicaTema(t){if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t)}
 aplicaTema(temaAtual());
 const A={
   ...AS,
-  icone:()=>modalInstalar(),
   instalar:()=>instalar(),
   instNao:()=>{try{localStorage.setItem(KEY+'.instNao',hojeK())}catch(e){}render()},
   entrarGoogle:()=>entrarGoogle(),
   sair:()=>sair(),
-  sair0:async()=>{apagaCache();try{await firebase.auth().signOut()}catch(e){}location.reload()},
+  sair0:()=>sairELimpar(),
   recarregar:()=>location.reload(),
   baixarIcone:()=>baixarIcone(),
   subMes:e=>{subMes=e.dataset.v;try{localStorage.setItem(KEY+'.subMes',subMes)}catch(_){}render();window.scrollTo(0,0)},
@@ -2508,12 +2626,13 @@ const A={
   vista:e=>{vista=e.dataset.v;try{localStorage.setItem(KEY+'.vista',vista)}catch(_){}render()},
   tema:e=>{const t=e.dataset.tema;try{localStorage.setItem(KEY+'.tema',t)}catch(_){}aplicaTema(t);render()},
   mesAnt:()=>mudaMes(-1), mesSeg:()=>mudaMes(1),
-  mesHoje:()=>{cur={y:hoje.getFullYear(),m:hoje.getMonth()};if(isPhone()){tab='mes';subMes='dias'}render();
+  mesHoje:()=>{const h=new Date();cur={y:h.getFullYear(),m:h.getMonth()};if(isPhone()){tab='mes';subMes='dias'}render();
     setTimeout(()=>{const d=document.querySelector('.lst-d.hoje')||document.querySelector('.cal-d.hoje');if(d)d.scrollIntoView({block:'start',behavior:'smooth'})},150)},
-  fechar, imprimir:()=>window.print(), exportar:()=>exportar(), pdfContrato:()=>pdfContrato(),
+  fechar:()=>fechar(), exportar:()=>exportar(), pdfContrato:()=>pdfContrato(),
   recibo:e=>modalRecibo(e.dataset.id), reciboEmail:e=>modalRecibo(e.dataset.id,true), reciboPdf:()=>pdfRecibo(),
   copiar:e=>copiar(e.dataset.txt,e.dataset.msg),
-  confOk:()=>{fechar();confirmar._fn&&confirmar._fn()},
+  confOk:()=>{if(document.getElementById('modal2').classList.contains('on'))fechar2();else fechar();confirmar._fn&&confirmar._fn()},
+  fechar2:()=>fechar2(),
   lembOk:e=>{const M=ensureMonth(K());M.lembOk=M.lembOk||{};M.lembOk[e.dataset.id]=hojeK();save();render()},
   lembRepor:()=>{const M=ensureMonth(K());M.lembOk={};save();render()},
   irMes:e=>{const [y,m]=e.dataset.k.split('-').map(Number);cur={y,m:m-1};tab='mes';render()},
@@ -2526,17 +2645,17 @@ const A={
     save();render();toast(n+' dia(s) adicionados');
   },
   limparColab:()=>{const cid=document.getElementById('qfC').value,c=colab(cid);if(!c)return;
-    confirmar(`Retirar todos os turnos de <b>${esc(c.nome)}</b> em ${MESES[cur.m]}?`,()=>{const M=ensureMonth(K());M.turnos=M.turnos.filter(t=>t.colabId!==cid);save();render()},'Sim, retirar')},
+    confirmar(`Apagar todos os turnos de <b>${esc(c.nome)}</b> em ${MESES[cur.m]}?`,()=>comDesfazer('Turnos de '+c.nome+' apagados',()=>{const M=ensureMonth(K());M.turnos=M.turnos.filter(t=>t.colabId!==cid)}),'Sim, apagar')},
   limparTudo:()=>{const M=monthData(K());const n=M.turnos.length,na=M.ajustes.length;
     if(!n&&!na){toast('Não há nada marcado em '+MESES[cur.m]);return}
-    confirmar(`Retirar <b>todos os turnos</b> de todas as pessoas e empresas em <b>${MESES[cur.m]} ${cur.y}</b> (${n} turno(s))?
+    confirmar(`Apagar <b>todos os turnos</b> de todas as pessoas e empresas em <b>${MESES[cur.m]} ${cur.y}</b> (${n} turno(s))?
       ${na?`<label class="bar small" style="margin-top:10px"><input type="checkbox" id="lAj"> Apagar também os adiantamentos, faltas e extras lançados (${na})</label>`:''}
       <div class="small mute" style="margin-top:8px">As entradas e despesas do mês não são apagadas.</div>`,
       ()=>{},'Sim, limpar tudo');
     confirmar._fn=null;const ok=document.querySelector('[data-a=confOk]');
     ok.dataset.a='limparTudoOk'},
-  limparTudoOk:()=>{const aj=document.getElementById('lAj');const tb=aj&&aj.checked;const M=ensureMonth(K());
-    M.turnos=[];if(tb){M.ajustes=[];M.pagos={}}fechar();save();render();toast('Mês limpo')},
+  limparTudoOk:()=>{const aj=document.getElementById('lAj');const tb=aj&&aj.checked;fechar();
+    comDesfazer('Mês limpo',()=>{const M=ensureMonth(K());M.turnos=[];if(tb){M.ajustes=[];M.pagos={}}})},
   setPer:e=>{modalDia.per=e.dataset.p;document.querySelectorAll('.seg').forEach(b=>b.classList.toggle('on',b.dataset.p===modalDia.per));modalDia._defs&&modalDia._defs()},
   addTurno:e=>{const k=e.dataset.k,$=id=>document.getElementById(id),cid=$('tC').value;if(!cid){toast('Não há ninguém em serviço');return}
     const M=ensureMonth(k.slice(0,7));modalDia.cid=cid;const dia=isDia(modalDia.per);
@@ -2551,13 +2670,13 @@ const A={
     $('tC').value=t.colabId;$('tI').value=t.inicio||'';$('tF').value=t.fim||'';$('tI2').value=t.inicio2||'';$('tF2').value=t.fim2||'';
     $('tH').value=t.horas;$('tV').value=t.valor??'';$('tN').value=t.nota||'';modalDia.editId=t.id;
     $('tTit').textContent='Alterar turno';$('tOk').textContent='Guardar alterações';modalDia._blocos();modalDia._prev();$('tI').focus()},
-  delTurno:e=>{const M=ensureMonth(K());const t=M.turnos.find(x=>x.id===e.dataset.id);M.turnos=M.turnos.filter(x=>x.id!==e.dataset.id);save();render();if(t)modalDia(t.data)},
+  delTurno:e=>{const M=ensureMonth(K());const t=M.turnos.find(x=>x.id===e.dataset.id);comDesfazer('Turno apagado',()=>{M.turnos=M.turnos.filter(x=>x.id!==e.dataset.id)});if(t)modalDia(t.data)},
   novoAj:e=>modalAj(e.dataset.id),
   relatorio:e=>modalRelatorio(e.dataset.id), relatorioPdf:()=>pdfRelatorio(),
   relMes:e=>{let m=RELO.m+ +e.dataset.d,y=RELO.y;if(m<0){m=11;y--}if(m>11){m=0;y++}RELO.m=m;RELO.y=y;desenhaRelatorio()},
   voltarDia:e=>modalDia(e.dataset.k),
   novoAjDia:e=>{const s=document.getElementById('tC'),cid=s&&s.value||null;if(cid)modalDia.cid=cid;modalAj(cid,e.dataset.k,e.dataset.k)},
-  delAjD:e=>{const k=e.dataset.k,M=ensureMonth(k.slice(0,7));M.ajustes=M.ajustes.filter(a=>a.id!==e.dataset.id);save();render();modalDia(k)},
+  delAjD:e=>{const k=e.dataset.k,M=ensureMonth(k.slice(0,7));comDesfazer('Apagado',()=>{M.ajustes=M.ajustes.filter(a=>a.id!==e.dataset.id)});modalDia(k)},
   addAj:e=>{const $=id=>document.getElementById(id),t=$('aT').value,dt=$('aD').value||hojeK(),cid=e.dataset.id||($('aC')&&$('aC').value);
     if(!cid)return;
     // guarda no mês da data escolhida, para ficar sincronizado com o calendário
@@ -2570,22 +2689,20 @@ const A={
   pagarResto:e=>{const M=ensureMonth(K()),id=e.dataset.id,c=colab(id);
     if(M.pagos[id]){delete M.pagos[id];save();render();toast('Pagamento anulado');return}
     const r=calcColab(c,M);M.pagos[id]={data:hojeK(),valor:r.antesResto};save();render();toast(eur(r.antesResto)+' pagos a '+c.nome)},
-  delTurnoP:e=>{const M=ensureMonth(K());M.turnos=M.turnos.filter(x=>x.id!==e.dataset.id);save();render()},
-  delAj:e=>{const M=ensureMonth(K());M.ajustes=M.ajustes.filter(a=>a.id!==e.dataset.id);save();render()},
+  delTurnoP:e=>{const M=ensureMonth(K());comDesfazer('Extra apagado',()=>{M.turnos=M.turnos.filter(x=>x.id!==e.dataset.id)})},
+  delAj:e=>{const M=ensureMonth(K());comDesfazer('Apagado',()=>{M.ajustes=M.ajustes.filter(a=>a.id!==e.dataset.id)})},
   addLinha:e=>{const M=ensureMonth(K());M[e.dataset.q].push({id:uid(),desc:'',valor:0});save();render()},
-  delLinha:e=>{const M=ensureMonth(K());M[e.dataset.q]=M[e.dataset.q].filter(x=>x.id!==e.dataset.id);save();render()},
+  delLinha:e=>{const M=ensureMonth(K());comDesfazer('Linha apagada',()=>{M[e.dataset.q]=M[e.dataset.q].filter(x=>x.id!==e.dataset.id)})},
   addColab:e=>{const t=e.dataset.t;const used=S.colabs.map(c=>c.cor);
     S.colabs.unshift(c0({nome:t==='empresa'?'Nova empresa':'Nova pessoa',tipo:t,modelo:t==='empresa'?'dia':'hora',cor:CORES.find(c=>!used.includes(c))||CORES[S.colabs.length%CORES.length]}));
     fichasAbertas.add(S.colabs[0].id);save();render();const i=document.querySelector('.col[open] .head input[type=text]');if(i){i.focus();i.select()}},
   delColab:e=>{const c=colab(e.dataset.id);
     const usado=Object.values(S.meses).some(M=>M.turnos.some(t=>t.colabId===c.id)||M.ajustes.some(a=>a.colabId===c.id));
-    confirmar(`Apagar <b>${esc(c.nome)}</b>?${usado?'<br><br>Atenção: tem turnos ou pagamentos registados. Se apagar, esses registos também desaparecem dos meses anteriores. Para manter o histórico, desmarque antes “Em serviço”.':''}`,()=>{
+    confirmar(`Apagar <b>${esc(c.nome)}</b>?${usado?'<br><br>Atenção: tem turnos ou pagamentos registados. Se apagar, esses registos também desaparecem dos meses anteriores. Para manter o histórico, desmarque antes “Em serviço”.':''}`,()=>comDesfazer(c.nome+' apagado(a)',()=>{
       S.colabs=S.colabs.filter(x=>x.id!==c.id);
-      Object.values(S.meses).forEach(M=>{M.turnos=M.turnos.filter(t=>t.colabId!==c.id);M.ajustes=M.ajustes.filter(a=>a.colabId!==c.id);if(M.pagos)delete M.pagos[c.id];if(M.base)delete M.base[c.id]});
-      save();render()})},
+      Object.values(S.meses).forEach(M=>{M.turnos=M.turnos.filter(t=>t.colabId!==c.id);M.ajustes=M.ajustes.filter(a=>a.colabId!==c.id);if(M.pagos)delete M.pagos[c.id];if(M.base)delete M.base[c.id]})}))},
   addMun:()=>{S.config.municipais.push({id:uid(),nome:'Novo concelho',mmdd:'01-01',ativo:true});fcache={};save();render()},
-  delMun:e=>{S.config.municipais=S.config.municipais.filter(m=>m.id!==e.dataset.id);fcache={};save();render()},
-  reset:()=>confirmar('Apagar <b>todos</b> os dados e voltar ao início? Exporte uma cópia antes, se quiser guardar o que tem.',()=>{S=inicial();fcache={};save();render()}),
+  delMun:e=>{comDesfazer('Feriado municipal apagado',()=>{S.config.municipais=S.config.municipais.filter(m=>m.id!==e.dataset.id);fcache={}})},
 };
 
 document.addEventListener('click',e=>{
@@ -2601,9 +2718,9 @@ document.addEventListener('click',e=>{
   if(tb){tab=tb.dataset.tab;try{localStorage.setItem(KEY+'.tab',tab)}catch(_){}render();return}
   const d=e.target.closest('.cal-d[data-dia],.lst-d[data-dia]');
   if(d){modalDia(d.dataset.dia);return}
-  if(e.target.id==='modal')fechar();
+  if(e.target.id==='modal2')fechar2();else if(e.target.id==='modal')fecharPedido();
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape')fechar()});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(document.getElementById('modal2').classList.contains('on'))fechar2();else fecharPedido()});
 let notaT;
 document.addEventListener('input',e=>{const el=e.target;if(!el.dataset||!el.dataset.nota)return;
   const M=ensureMonth(K());M.notas=M.notas||{};const v=el.value;if(v.trim())M.notas[el.dataset.nota]=v;else delete M.notas[el.dataset.nota];
@@ -2649,19 +2766,23 @@ document.addEventListener('change',e=>{
       if(!d||!Array.isArray(d.colabs)){abrir(`<h3>Não foi possível abrir</h3><p>O ficheiro <b>${esc(f.name)}</b> não tem os dados das pessoas e empresas.</p><div class="bar" style="justify-content:flex-end"><button class="btn p" data-a="fechar">OK</button></div>`);return}
       d.meses=d.meses||{};if(!d.saude&&S.saude)d.saude=S.saude;
       const AD=d.anexosDados||null;delete d.anexosDados;const nAD=AD?Object.keys(AD).length:0;
-      confirmar(`Abrir <b>${esc(f.name)}</b>? Os dados partilhados <b>de todos</b> serão substituídos pelos do ficheiro (${d.colabs.length} pessoas/empresas, ${Object.keys(d.meses).length} mês/meses${nAD?`, ${nAD} anexo(s)`:''}).`,async()=>{S=d;migrar();fcache={};anxCache={};save();render();
+      confirmar(`Abrir <b>${esc(f.name)}</b>? Os dados partilhados <b>de todos</b> serão substituídos pelos do ficheiro (${d.colabs.length} pessoas/empresas, ${Object.keys(d.meses).length} mês/meses${nAD?`, ${nAD} anexo(s)`:''}).`,async()=>{if(temDados()){toast('A guardar o estado atual…');await fazerCopia('antes de abrir uma cópia')}
+        S=d;migrar();fcache={};anxCache={};save();render();
         if(!nAD){toast('Ficheiro aberto: dados atualizados para todos');return}
         let i=0,falhas=0;
         for(const x of todosAnexos()){const b=AD[x.a.id];if(!b)continue;i++;toast('A repor anexos: '+i+' de '+nAD);
           try{x.a.partes=await gravarPartes(x.a.id,b)}catch(e){falhas++}}
         save();render();toast(falhas?'Dados repostos; '+falhas+' anexo(s) não foram repostos':'Ficheiro aberto: dados e anexos repostos')},'Sim, abrir');
-    }).catch(()=>toast('Não foi possível ler o ficheiro. Tente de novo.'));
+    }).catch(()=>erro('Não foi possível ler o ficheiro. Tente de novo.'));
   }
 });
 
 (()=>{const hd=document.querySelector('header');let on=false;
   window.addEventListener('scroll',()=>{const y=window.scrollY;if(!on&&y>140){on=true;hd.classList.add('compacto')}else if(on&&y<30){on=false;hd.classList.remove('compacto')}},{passive:true})})();
 render();
+/* a app instalada pode ficar aberta vários dias: quando volta a ser vista noutro dia, atualiza o "hoje" e faz a cópia do dia */
+let diaVisto=hojeK();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||hojeK()===diaVisto)return;diaVisto=hojeK();render();if(DB)copiaDiaria()});
 {const l=document.getElementById('logoTopo');if(l)l.innerHTML=ICONE_SVG}
 ligar();
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
