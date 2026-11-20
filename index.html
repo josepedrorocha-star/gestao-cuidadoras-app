@@ -712,9 +712,11 @@ async function ligar(){
     entrada='ok';render();ligarBase(criarDB(fs));
   });
 }
+/* erro da base: mostra-o no topo (não é escondido pelo "A demorar…") e escreve o motivo na consola */
+function falhaBase(e){modo='erro';erroSync=(e&&e.code)||'erro';try{console.error('[Gestão de Cuidadoras] erro da base de dados:',e&&e.code,e&&e.message)}catch(_){}estado();pedirRender()}
 function ligarBase(db){
   DB=db;modo='a ligar';estado();
-  const t=setTimeout(()=>{if(!carregado.estado){modo='lento';estado()}},10000);
+  const t=setTimeout(()=>{if(!carregado.estado&&modo!=='erro'){modo='lento';estado()}},10000);
   db.doc('app/estado').onSnapshot(snap=>{
     if(snap.exists){
       const d=snap.data(),j=sJ(d);
@@ -723,12 +725,12 @@ function ligarBase(db){
     }
     if(!snap.metadata.fromCache){carregado.estado=true;clearTimeout(t);modo='ok';if(!snap.exists)pedirRender()}
     estado();
-  },e=>{modo='erro';erroSync=e.code;estado()});
+  },falhaBase);
   db.doc('app/saude').onSnapshot(snap=>{
     if(snap.exists){const d=snap.data(),j=sJ(d);
       if(!sujos.has('saude')&&!emCurso.has('saude')&&j!==enviado.saude){S.saude=clone(d);enviado.saude=j;pedirRender()}}
     if(!snap.metadata.fromCache&&!carregado.saude){carregado.saude=true;pedirRender();if(!S.saude)S.saude={};marcarSujos();if(sujos.size){clearTimeout(flushT);flushT=setTimeout(enviar,500)}}
-  },e=>{modo='erro';erroSync=e.code;estado()});
+  },falhaBase);
   db.collection('meses').onSnapshot(q=>{
     let mudou=false;
     q.docChanges().forEach(ch=>{const k=ch.doc.id,id='m:'+k;
@@ -738,13 +740,14 @@ function ligarBase(db){
       if(!sujos.has(id)&&j!==enviado.meses[k]){S.meses[k]=clone(d);enviado.meses[k]=j;mudou=true}});
     if(!q.metadata.fromCache)carregado.meses=true;
     if(mudou)pedirRender();
-  },e=>{modo='erro';erroSync=e.code;estado()});
+  },falhaBase);
 }
 function estado(){
   const el=document.getElementById('estado');if(!el)return;
   if(entrada!=='ok'){el.textContent='';el.className='estado';el.title='';return}
   let t,c='estado',tt='';
   if(modo==='local'){t='⚠️ Só neste browser';c+=' aviso';tt='Sem ligação à base partilhada: as alterações ficam só neste browser'}
+  else if(modo==='erro'&&/permission/.test(erroSync)){t='⚠️ Sem permissão na base de dados';c+=' aviso';tt='O Firebase recusou o acesso: confirme as Regras do Firestore ('+erroSync+')'}
   else if(modo==='erro'){t='⚠️ Ligação perdida';c+=' aviso';tt='Recarregue a página ('+erroSync+')'}
   else if(!carregado.estado){t=modo==='lento'?'⏳ A demorar…':'⏳ A carregar…'}
   else if(aGravar||sujos.size){t='↻ A guardar…'}
