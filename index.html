@@ -1827,8 +1827,13 @@ function vSaude(p){
   h+=sec('s-'+p+'-hoje','💊 Medicação do dia e próximas consultas',th);
   // MEDICAÇÃO
   const atuais=P.meds.filter(m=>!m.fim||m.fim>=hj),antigas=P.meds.filter(m=>m.fim&&m.fim<hj);
-  const grupoM=(lst,tit)=>lst.length?`<div class="seglab">${tit} (${lst.length})</div>`+lst.sort((a,b)=>a.nome.localeCompare(b.nome)).map(m=>linhaMed(p,P,m)).join(''):'';
-  let mh=grupoM(atuais.filter(m=>m.tipo!=='temp'),'Permanente')+grupoM(atuais.filter(m=>m.tipo==='temp'),'Temporária');
+  /* organizada por hora da toma: um grupo por hora (o medicamento aparece em cada hora em que é tomado); os SOS no fim */
+  const porNome=(a,b)=>(a.tipo==='temp')-(b.tipo==='temp')||a.nome.localeCompare(b.nome);
+  const horasM=[...new Set(atuais.filter(m=>m.freq!=='sos').flatMap(m=>(m.horas&&m.horas.length)?m.horas:['']))].sort();
+  let mh=horasM.map(h=>{const lst=atuais.filter(m=>m.freq!=='sos'&&((m.horas&&m.horas.length)?m.horas.includes(h):h==='')).sort(porNome),mo=MOMENTOS.find(x=>x[0]===h);
+    return `<div class="seglab">${h?'🕐 '+hh(h)+(mo?' · '+mo[1]:''):'Sem hora marcada'} (${lst.length})</div>`+lst.map(m=>linhaMed(p,P,m)).join('')}).join('');
+  const sosM=atuais.filter(m=>m.freq==='sos').sort(porNome);
+  if(sosM.length)mh+=`<div class="seglab">Quando necessário (${sosM.length})</div>`+sosM.map(m=>linhaMed(p,P,m)).join('');
   if(!atuais.length)mh+=`<p class="small mute">Ainda não há medicação registada.</p>`;
   if(antigas.length)mh+=`<details class="s-mais"><summary>Medicação que já terminou (${antigas.length})</summary>${antigas.sort((a,b)=>(b.fim||'')<(a.fim||'')?-1:1).map(m=>linhaMed(p,P,m)).join('')}</details>`;
   mh+=`<div class="bar" style="margin-top:10px"><button class="btn p" data-a="sNovo" data-p="${p}" data-t="meds">+ Medicamento</button></div>`;
@@ -2224,7 +2229,8 @@ async function pdfSaude(p){
   const tit=t=>{y+=4*k;doc.setFont('helvetica','bold');doc.setFontSize(10.5*k);doc.setTextColor(...verde);doc.text(t,14,y);doc.setTextColor(0);y+=1.5};
   const tab=(head,body,cs)=>{doc.autoTable({startY:y,head:[head],body:body.length?body:[[{content:'Nada registado.',colSpan:head.length}]],theme:'grid',margin:{left:14,right:14,bottom:14},
     styles:{fontSize:8*k,cellPadding:1.2*k,lineColor:[228,222,212],lineWidth:0.2,valign:'top'},headStyles:{fillColor:verde,textColor:255},columnStyles:cs||{}});y=doc.lastAutoTable.finalY+1};
-  const atuais=P.meds.filter(m=>!m.fim||m.fim>=hj).sort((a,b)=>(a.tipo==='temp')-(b.tipo==='temp')||a.nome.localeCompare(b.nome));
+  const h1=m=>m.freq==='sos'?'99':((m.horas||[]).slice().sort()[0]||'98');
+  const atuais=P.meds.filter(m=>!m.fim||m.fim>=hj).sort((a,b)=>h1(a)<h1(b)?-1:h1(a)>h1(b)?1:(a.tipo==='temp')-(b.tipo==='temp')||a.nome.localeCompare(b.nome));
   tit('Medicação atual');
   tab(['Medicamento','Dose','Quando','Para quê','Receitado por','Desde / até'],atuais.map(m=>{const dz=P.doencas.find(d=>d.id===m.doenca);
     return [T(m.nome+(m.tipo==='temp'?' (temporária)':'')),T(m.dose),T(txHoras(m)+(m.notas?' - '+m.notas:'')),T(dz?dz.nome:m.para),T(nomeMedico(P,m.medico)),T([m.inicio?dataPT(m.inicio):'',m.fim?'até '+dataPT(m.fim):''].filter(Boolean).join(' '))]}),{0:{fontStyle:'bold',cellWidth:34},1:{cellWidth:26},2:{cellWidth:34},5:{cellWidth:24}});
