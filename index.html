@@ -700,6 +700,8 @@ async function ligar(){
   if(!window.FIREBASE_CONFIG||!window.FIREBASE_CONFIG.apiKey){entrada='sem config';render();return}
   try{firebase.initializeApp(window.FIREBASE_CONFIG)}catch(e){}
   const fs=firebase.firestore();
+  /* ligação por pedidos simples em vez de um canal contínuo: funciona mesmo com antivírus, bloqueadores ou redes que cortam o canal */
+  try{fs.settings({experimentalForceLongPolling:true,merge:true})}catch(e){}
   try{await fs.enablePersistence({synchronizeTabs:true})}catch(e){}
   firebase.auth().getRedirectResult().catch(e=>{const c=e&&e.code;if(c){erroEntrada=MSG_ENTRADA[c]||('Não foi possível entrar ('+c+').');render()}});
   firebase.auth().onAuthStateChanged(u=>{
