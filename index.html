@@ -1760,14 +1760,17 @@ new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')trocaTx
 document.addEventListener('DOMContentLoaded',()=>iconizar(document.body));setTimeout(()=>iconizar(document.body),0);
 /* ---------- Saúde do Pai e da Mãe ---------- */
 const PESSOAS_S={pai:'Pai',mae:'Mãe'};
-const TIPO_C={consulta:'Consulta',tratamento:'Tratamento',internamento:'Internamento',exame:'Exame',analises:'Análises',outro:'Outro'};
+const TIPO_C={consulta:'Consulta',tratamento:'Tratamento',intervencao:'Intervenção',internamento:'Internamento',exame:'Exame',analises:'Análises',outro:'Outro'};
 /* internamento: data = entrada, fim = alta (vazio enquanto internado) */
 const ehInt=c=>c&&c.tipo==='internamento',internadoAgora=c=>ehInt(c)&&!c.fim&&c.data&&c.data<=hojeK()&&c.estado!=='desmarcada';
 const diasEntre=(a,b)=>{const d=k=>{const [y,m,dd]=k.split('-').map(Number);return new Date(y,m-1,dd)};return Math.round((d(b)-d(a))/864e5)};
 const EST_C={pormarcar:'Por marcar',marcada:'Marcada',feita:'Realizada',desmarcada:'Desmarcada'};
 /* texto do estado concordante com o tipo: consulta realizada, exame realizado, análises realizadas, internamento com alta */
-const GEN_C={consulta:'a',analises:'as'};
+const GEN_C={consulta:'a',intervencao:'a',analises:'as'};
 const estTxt=c=>{const g=GEN_C[c.tipo]||'o';if(c.estado==='feita')return c.tipo==='internamento'?'Com alta':'Realizad'+g;if(c.estado==='desmarcada')return 'Desmarcad'+g;return EST_C[c.estado]||''};
+/* nome curto de um registo (ex.: "Consulta de Cardiologia") e o texto para escolher numa lista */
+const nomeC=(P,x)=>(TIPO_C[x.tipo]||'Consulta')+(medicoS(P,x.medico)&&medicoS(P,x.medico).especialidade?' de '+medicoS(P,x.medico).especialidade:x.esp?' de '+x.esp:'');
+const rotuloC=(P,x)=>(x.data?dataPT(x.data):'Por marcar')+' · '+nomeC(P,x)+(x.motivo?' ('+x.motivo+')':'');
 /* exames e análises têm caixa própria; consultas e tratamentos ficam em Consultas */
 const TIPOS_EXAME=['exame','analises','outro'],ehExame=c=>TIPOS_EXAME.includes(c&&c.tipo);
 const TIPO_MED={tensao:'Tensão arterial',glicemia:'Glicemia (açúcar)',peso:'Peso',temperatura:'Temperatura',saturacao:'Saturação (O₂)',dor:'Dor (0 a 10)',outra:'Outra'};
@@ -1846,25 +1849,30 @@ function vSaude(p){
   if(passadas.length)dh+=`<details class="s-mais"><summary>Doenças passadas (${passadas.length})</summary>${passadas.sort((a,b)=>(b.fim||'')<(a.fim||'')?-1:1).map(d=>linhaDoenca(p,P,d)).join('')}</details>`;
   dh+=`<div class="bar" style="margin-top:10px"><button class="btn p" data-a="sNovo" data-p="${p}" data-t="doencas">+ Doença</button></div>`;
   h+=sec('s-'+p+'-doencas','📋 Doenças',dh,{extra:`<span class="small mute">${ativas.length} em curso</span>`});
-  // CONSULTAS (consultas e tratamentos)
+  // CONSULTAS (consultas, tratamentos e intervenções)
   const ordD=(a,b)=>((b.data||'')+(b.hora||''))<((a.data||'')+(a.hora||''))?-1:1;
   const intA=P.consultas.filter(internadoAgora),futC=proximasConsultas(P).filter(c=>!ehExame(c)&&!intA.includes(c)),histC=P.consultas.filter(c=>!ehExame(c)&&!futC.includes(c)&&!intA.includes(c)).sort(ordD);
   let ch=intA.length?`<div class="seglab">Internado agora</div>`+intA.map(c=>linhaConsulta(p,P,c)).join(''):'';
   ch+=futC.length?`<div class="seglab">Marcadas (${futC.length})</div>`+futC.map(c=>linhaConsulta(p,P,c)).join(''):`<p class="small mute">Não há consultas marcadas.</p>`;
   if(histC.length)ch+=`<details class="s-mais"${futC.length?'':' open'}><summary>Histórico (${histC.length})</summary>${histC.map(c=>linhaConsulta(p,P,c)).join('')}</details>`;
-  ch+=`<div class="bar" style="margin-top:10px"><button class="btn p" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="consulta">+ Marcar consulta</button><button class="btn" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="internamento">🏥 + Internamento</button></div>`;
-  h+=sec('s-'+p+'-cons','📅 Consultas e internamentos',ch,{extra:`<span class="small mute">${intA.length?'<b class="neg">internado</b> · ':''}${futC.length} marcada(s)</span>`});
-  // EXAMES E ANÁLISES
+  ch+=`<div class="bar" style="margin-top:10px"><button class="btn p" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="consulta">+ Marcar consulta</button><button class="btn" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="intervencao">+ Intervenção</button><button class="btn" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="internamento">🏥 + Internamento</button></div>`;
+  h+=sec('s-'+p+'-cons','📅 Consultas, intervenções e internamentos',ch,{extra:`<span class="small mute">${intA.length?'<b class="neg">internado</b> · ':''}${futC.length} marcada(s)</span>`});
+  // EXAMES E ANÁLISES: marcação (por marcar, marcados, desmarcados) separada dos resultados (já feitos)
   const E=P.consultas.filter(ehExame),porM=E.filter(c=>c.estado==='pormarcar').sort((a,b)=>(a.criado||'')<(b.criado||'')?-1:1),
-    marcE=proximasConsultas(P).filter(ehExame),feitE=E.filter(c=>!porM.includes(c)&&!marcE.includes(c)).sort(ordD);
+    marcE=E.filter(c=>(c.estado||'marcada')==='marcada'&&c.data).sort((a,b)=>(a.data+(a.hora||''))<(b.data+(b.hora||''))?-1:1),
+    desE=E.filter(c=>c.estado==='desmarcada').sort(ordD),feitE=E.filter(c=>c.estado==='feita').sort(ordD),
+    semRes=feitE.filter(c=>!c.resultado&&!(c.anexos||[]).length);
   let eh='';
   if(porM.length)eh+=`<div class="seglab">Por marcar (${porM.length})</div>`+porM.map(c=>linhaConsulta(p,P,c)).join('');
   if(marcE.length)eh+=`<div class="seglab">Marcados (${marcE.length})</div>`+marcE.map(c=>linhaConsulta(p,P,c)).join('');
-  if(!porM.length&&!marcE.length)eh+=`<p class="small mute">Não há exames nem análises por fazer.</p>`;
-  if(feitE.length)eh+=`<details class="s-mais"${porM.length||marcE.length?'':' open'}><summary>Feitos (${feitE.length})</summary>${feitE.map(c=>linhaConsulta(p,P,c)).join('')}</details>`;
+  if(!porM.length&&!marcE.length)eh+=`<p class="small mute">Não há exames nem análises por marcar ou marcados.</p>`;
+  if(desE.length)eh+=`<details class="s-mais"><summary>Desmarcados (${desE.length})</summary>${desE.map(c=>linhaConsulta(p,P,c)).join('')}</details>`;
   eh+=`<div class="bar" style="margin-top:10px"><button class="btn p" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="exame">+ Exame ou análise</button></div>`;
-  if(!isPhone()&&P.consultas.length)eh+=`<p class="small mute anx-dica">📎 Para anexar um PDF ou fotografia, arraste o ficheiro para cima do exame ou da consulta, ou passe o rato por cima e carregue <b>Ctrl+V</b>.</p>`;
-  h+=sec('s-'+p+'-exames','🧪 Exames e análises',eh,{extra:`<span class="small mute">${porM.length?porM.length+' por marcar · ':''}${marcE.length} marcado(s)</span>`});
+  h+=sec('s-'+p+'-exames','🧪 Marcação de exames e análises',eh,{extra:`<span class="small mute">${porM.length?porM.length+' por marcar · ':''}${marcE.length} marcado(s)</span>`});
+  let rh=feitE.length?(semRes.length?`<div class="help">Quando receber o resultado, carregue em <b>✎ Editar</b> para o escrever, ou anexe o PDF ou a fotografia.</div>`:'')+feitE.map(c=>linhaConsulta(p,P,c)).join('')
+    :`<p class="small mute">Ainda não há exames feitos. Quando marcar um exame como <b>✓ Realizado</b>, ele passa para aqui, onde pode juntar o resultado.</p>`;
+  if(!isPhone()&&P.consultas.length)rh+=`<p class="small mute anx-dica">📎 Para anexar um PDF ou fotografia, arraste o ficheiro para cima do exame ou da consulta, ou passe o rato por cima e carregue <b>Ctrl+V</b>.</p>`;
+  h+=sec('s-'+p+'-resultados','📄 Resultados de exames e análises',rh,{extra:`<span class="small mute">${semRes.length?semRes.length+' à espera do resultado · ':''}${feitE.length} feito(s)</span>`});
   // MÉDICOS
   let medh=P.medicos.length?P.medicos.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(m=>{
     const nD=P.doencas.filter(d=>d.medico===m.id&&!d.fim).length,nM=P.meds.filter(x=>x.medico===m.id&&medAtivo(x,hj)).length;
@@ -1905,12 +1913,13 @@ function linhaDoenca(p,P,d){const ms=P.meds.filter(m=>m.doenca===d.id&&medAtivo(
     ${ms.length?`<div class="small">💊 ${ms.map(m=>esc(m.nome)).join(', ')}</div>`:''}${d.notas?`<div class="small mute">${esc(d.notas)}</div>`:''}</div>
     <div class="s-bts"><button class="btn s" data-a="sEditar" data-p="${p}" data-t="doencas" data-id="${d.id}">✎ Editar</button></div></div>`}
 function linhaConsulta(p,P,c){const m=medicoS(P,c.medico),pm=c.estado==='pormarcar'||!c.data,q=!pm&&(c.estado==='marcada'||!c.estado)?quandoTxt(c.data):'',dz=P.doencas.find(d=>d.id===c.doenca);
+  const rl=c.rel&&P.consultas.find(x=>x.id===c.rel),lig=P.consultas.filter(x=>x.rel===c.id);
   const ped=c.pedido&&P.consultas.find(x=>x.id===c.pedido),filhos=!ehExame(c)?P.consultas.filter(x=>x.pedido===c.id&&ehExame(x)):[];
   const nmC=x=>(TIPO_C[x.tipo]||'Consulta')+(medicoS(P,x.medico)&&medicoS(P,x.medico).especialidade?' de '+medicoS(P,x.medico).especialidade:x.esp?' de '+x.esp:'');
   const iA=internadoAgora(c),txInt=ehInt(c)&&c.data?(c.fim?`Alta a ${dataPT(c.fim)} · ${Math.max(0,diasEntre(c.data,c.fim))} dia(s) internado`:iA?`Internado há ${Math.max(0,diasEntre(c.data,hojeK()))} dia(s)`:'Internamento previsto'):'';
   return `<div class="s-item${c.estado==='desmarcada'?' antigo':''}${iA?' s-int':''}" data-anx-alvo="${p}|${c.id}"><span class="s-h">${pm?`<b class="small">Por</b><span class="small">marcar</span>`:`<b>${dataPT(c.data).slice(0,5)}</b><span class="small">${DSEM_S[diaSemana(c.data)]}${c.hora?' '+hh(c.hora):''}</span>`}</span>
     <div class="s-t"><b>${esc(TIPO_C[c.tipo]||'Consulta')}${m&&m.especialidade?' de '+esc(m.especialidade):c.esp?' de '+esc(c.esp):''}${ehExame(c)&&c.motivo?': '+esc(c.motivo):''}</b>${q?` <span class="tag">${q}</span>`:''}${c.estado&&c.estado!=='marcada'&&c.estado!=='pormarcar'?` <span class="tag off">${estTxt(c)}</span>`:''}
-      <div class="small mute">${[m?m.nome:'',c.local||(m&&m.local)||'',dz?'('+dz.nome+')':'',ehExame(c)?'':c.motivo||''].filter(Boolean).map(esc).join(' · ')}</div>${txInt?`<div class="small${iA?' neg':''}">🏥 ${txInt}${c.servico?' · '+esc(c.servico):''}</div>`:''}${ped?`<div class="small mute">Pedido na ${esc(nmC(ped).toLowerCase())}${ped.data?' de '+dataPT(ped.data):''}</div>`:''}${filhos.length?`<div class="small">🧪 Pediu: ${filhos.map(x=>esc(TIPO_C[x.tipo]||'Exame')+(x.motivo?' ('+esc(x.motivo)+')':'')+(x.estado==='pormarcar'?' — por marcar':x.estado==='feita'?' — feito':x.data?' — '+dataPT(x.data):'')).join('; ')}</div>`:''}${c.notas?`<div class="small">📝 ${esc(c.notas)}</div>`:''}${vAnexos(p,c)}</div>
+      <div class="small mute">${[m?m.nome:'',c.local||(m&&m.local)||'',dz?'('+dz.nome+')':'',ehExame(c)?'':c.motivo||''].filter(Boolean).map(esc).join(' · ')}</div>${txInt?`<div class="small${iA?' neg':''}">🏥 ${txInt}${c.servico?' · '+esc(c.servico):''}</div>`:''}${rl?`<div class="small mute">🔗 Relacionada com: ${esc(rotuloC(P,rl))}</div>`:''}${lig.length?`<div class="small mute">🔗 Relacionado: ${lig.map(x=>esc(rotuloC(P,x))).join('; ')}</div>`:''}${ped?`<div class="small mute">Pedido na ${esc(nmC(ped).toLowerCase())}${ped.data?' de '+dataPT(ped.data):''}</div>`:''}${filhos.length?`<div class="small">🧪 Pediu: ${filhos.map(x=>esc(TIPO_C[x.tipo]||'Exame')+(x.motivo?' ('+esc(x.motivo)+')':'')+(x.estado==='pormarcar'?' — por marcar':x.estado==='feita'?' — feito':x.data?' — '+dataPT(x.data):'')).join('; ')}</div>`:''}${ehExame(c)&&c.resultado?`<div class="small">📄 <b>Resultado:</b> ${esc(c.resultado)}</div>`:''}${ehExame(c)&&c.estado==='feita'&&!c.resultado&&!(c.anexos||[]).length?`<div class="small"><span class="tag off">À espera do resultado</span></div>`:''}${ehExame(c)&&c.estado==='marcada'&&c.data&&c.data<hojeK()?`<div class="small neg">Já passou a data. Foi feito? Carregue em <b>✓ Realizado</b>.</div>`:''}${c.notas?`<div class="small">📝 ${esc(c.notas)}</div>`:''}${vAnexos(p,c)}</div>
     <div class="s-bts"><label class="btn s" title="Anexar PDF ou fotografia (também pode arrastar o ficheiro para cima, ou colar com Ctrl+V)">📎 Anexar<input type="file" data-anx data-p="${p}" data-id="${c.id}" accept="application/pdf,image/*" multiple hidden></label>${pm&&c.estado!=='feita'&&c.estado!=='desmarcada'?`<button class="btn s p" data-a="sMarcar" data-p="${p}" data-id="${c.id}">📅 Marcar</button>`:''}${iA?`<button class="btn s p" data-a="sAlta" data-p="${p}" data-id="${c.id}">🏥 Teve alta</button>`:''}${!ehInt(c)&&(c.estado==='marcada'||(!c.estado&&!pm)||(pm&&ehExame(c)&&c.estado!=='feita'&&c.estado!=='desmarcada'))?`<button class="btn s" data-a="sFeita" data-p="${p}" data-id="${c.id}">✓ ${estTxt(Object.assign({},c,{estado:'feita'}))}</button>`:''}<button class="btn s" data-a="sEditar" data-p="${p}" data-t="consultas" data-id="${c.id}">✎ Editar</button></div></div>`}
 
 /* ---------- anexos (PDF e fotografias) nas consultas e exames ----------
@@ -2089,6 +2098,13 @@ document.addEventListener('paste',e=>{
   anexar(p,id,fs)});
 
 /* formulários */
+/* "Relacionada com": doenças, depois consultas/intervenções/internamentos já registados, e no fim "+ Novo registo…" */
+function relOpcoes(P){const cur=SF&&SF.id,v=(SF&&SF.relAtual)||'';
+  const regs=P.consultas.filter(x=>x.id!==cur&&(!ehExame(x)||x.id===v)).sort((a,b)=>(b.data||'9')<(a.data||'9')?-1:1);
+  const ds=P.doencas.filter(d=>!d.fim);
+  return [['','— Nenhuma —'],...(ds.length?[['__grupo','Doenças'],...ds.map(d=>[d.id,d.nome])]:[]),
+    ...(regs.length?[['__grupo','Consultas, intervenções e internamentos'],...regs.map(x=>['c:'+x.id,rotuloC(P,x)])]:[]),
+    ['__grupo',''],['__novoR','+ Novo registo…']]}
 function camposS(t,P){
   const meds=[['','— Nenhum —'],...P.medicos.map(m=>[m.id,m.nome+(m.especialidade?' ('+m.especialidade+')':'')]),['__novo','+ Novo médico…']];
   const doe=[['','— Nenhuma —'],...P.doencas.filter(d=>!d.fim).map(d=>[d.id,d.nome])];
@@ -2105,12 +2121,13 @@ function camposS(t,P){
     doencas:[{k:'nome',l:'Doença',w:1,ph:'ex.: Diabetes tipo 2'},{k:'tipo',l:'Tipo',t:'seg',o:[['cronica','Crónica'],['temp','Temporária']],def:'cronica',w:1},
       {k:'diag',l:'Data do diagnóstico',t:'date'},{k:'fim',l:'Curada / terminou em',t:'date',dica:'Vazio enquanto durar'},
       {k:'medico',l:'Médico que acompanha',t:'sel',o:meds,w:1},{k:'notas',l:'Notas',t:'area',w:1}],
-    consultas:[{k:'tipo',l:'Tipo',t:'sel',o:Object.entries(TIPO_C),def:'consulta'},{k:'estado',l:'Estado',t:'sel',o:Object.entries(EST_C),def:'marcada',nse:['tipo','internamento']},
+    consultas:[{k:'tipo',l:'Tipo',t:'sel',o:Object.entries(TIPO_C).map(([a,b])=>[a,a==='intervencao'?'Intervenção / cirurgia':b]),def:'consulta'},{k:'estado',l:'Estado',t:'sel',o:Object.entries(EST_C),def:'marcada',nse:['tipo','internamento']},
       {k:'data',l:'Data (no internamento: dia de entrada)',t:'date',def:hojeK(),nse:['estado','pormarcar']},{k:'hora',l:'Hora',t:'time',nse:['estado','pormarcar']},
       {k:'fim',l:'Data da alta',t:'date',se:['tipo','internamento'],dica:'Deixe vazio enquanto estiver internado'},{k:'servico',l:'Serviço',ph:'ex.: Medicina Interna',se:['tipo','internamento']},
       {k:'pedido',l:'Pedido na consulta de',t:'sel',o:[['','— Nenhuma —'],...P.consultas.filter(x=>!ehExame(x)&&x.data).sort((a,b)=>a.data<b.data?1:-1).slice(0,30).map(x=>[x.id,dataPT(x.data)+' · '+(TIPO_C[x.tipo]||'Consulta')+((medicoS(P,x.medico)||{}).especialidade?' de '+medicoS(P,x.medico).especialidade:x.esp?' de '+x.esp:'')])],w:1,se:['tipo','exame|analises|outro']},
       {k:'medico',l:'Médico',t:'sel',o:meds,w:1},{k:'esp',l:'Especialidade (se não escolheu médico)',ph:'ex.: Cardiologia'},{k:'local',l:'Local',ph:'ex.: Hospital de Portimão'},
-      {k:'doenca',l:'Relacionada com',t:'sel',o:doe},{k:'motivo',l:'Motivo',ph:'ex.: revisão anual'},
+      {k:'doenca',l:'Relacionada com',t:'sel',w:1,vf:v=>v.rel?'c:'+v.rel:(v.doenca||''),o:relOpcoes(P)},{k:'motivo',l:'Motivo',ph:'ex.: revisão anual',w:1},
+      {k:'resultado',l:'Resultado',t:'area',w:1,se:['tipo','exame|analises|outro;estado:feita'],ph:'ex.: colesterol 210; resto normal. Também pode anexar o PDF do resultado.'},
       {k:'notas',l:'Notas / o que o médico disse',t:'area',w:1}],
     medicos:[{k:'nome',l:'Nome',w:1,ph:'ex.: Dra. Ana Silva'},{k:'especialidade',l:'Especialidade',ph:'ex.: Cardiologia'},{k:'local',l:'Local',ph:'ex.: Hospital de Portimão'},
       {k:'tel',l:'Telefone',t:'tel'},{k:'email',l:'Email',t:'email'},{k:'notas',l:'Notas',t:'area',w:1}],
@@ -2125,12 +2142,14 @@ function modalSaude(p,t,id,pre){
   const P=SP(p),it=id?P[t].find(x=>x.id===id):null,v=Object.assign({},it||{},pre||{});
   SF={p,t,id};
   const agora=new Date(),hm=pad(agora.getHours())+':'+pad(agora.getMinutes());
-  const campos=camposS(t,P).map(c=>{let val=v[c.k];if(val===undefined)val=c.def==='agora'?hm:(c.def||'');
+  SF.relAtual=v.rel||'';
+  const campos=camposS(t,P).map(c=>{let val=c.vf?c.vf(v):v[c.k];if(val===undefined)val=c.def==='agora'?hm:(c.def||'');
     const cond=c.se?` data-se="${c.se[0]}:${c.se[1]}"`:c.nse?` data-nse="${c.nse[0]}:${c.nse[1]}"`:'';
     const lab=`<label class="f ${c.w?'w':''}"${cond}>${c.l}`;
-    if(c.t==='sel')return `${lab}<select data-ff="${c.k}">${c.o.map(([a,b])=>`<option value="${esc(a)}" ${a===val?'selected':''}>${esc(b)}</option>`).join('')}</select></label>`;
+    if(c.t==='sel'){let g=false;const ops=c.o.map(([a,b])=>{if(a==='__grupo'){const r=(g?'</optgroup>':'')+(b?`<optgroup label="${esc(b)}">`:'');g=!!b;return r}return `<option value="${esc(a)}" ${a===val?'selected':''}>${esc(b)}</option>`}).join('')+(g?'</optgroup>':'');
+      return `${lab}<select data-ff="${c.k}">${ops}</select></label>`}
     if(c.t==='seg')return `<div class="f ${c.w?'w':''}"><span class="small mute" style="font-weight:600">${c.l}</span><div class="segs ss2" data-segf="${c.k}">${c.o.map(([a,b])=>`<button type="button" class="seg ${a===val?'on':''}" data-v="${a}">${b}</button>`).join('')}</div><input type="hidden" data-ff="${c.k}" value="${esc(val)}"></div>`;
-    if(c.t==='area')return `${lab}<textarea data-ff="${c.k}">${esc(val)}</textarea></label>`;
+    if(c.t==='area')return `${lab}<textarea data-ff="${c.k}"${c.ph?` placeholder="${esc(c.ph)}"`:''}>${esc(val)}</textarea></label>`;
     if(c.t==='dias'){const ds=Array.isArray(v.dias)?v.dias:[1,2,3,4,5];return `<div class="f w"${cond}><span class="small mute" style="font-weight:600">${c.l}</span><div class="s-dias">${[1,2,3,4,5,6,0].map(d=>`<label><input type="checkbox" data-dia="${d}" ${ds.includes(d)?'checked':''}> ${DSEM_S[d]}</label>`).join('')}</div></div>`}
     if(c.t==='horas'){const hs=Array.isArray(v.horas)&&v.horas.length?v.horas:['08:00'];
       return `<div class="f w"${cond}><span class="small mute" style="font-weight:600">${c.l}</span><div class="s-horas" id="sHoras">${hs.map(x=>horaIn(x)).join('')}</div>
@@ -2143,15 +2162,15 @@ function modalSaude(p,t,id,pre){
 }
 const horaIn=x=>`<span class="s-hora"><input type="time" value="${esc(x)}"><button type="button" class="btn s d" data-a="sTiraHora" title="Tirar">✕</button></span>`;
 function condS(){const f=document.getElementById('sForm');if(!f)return;const val=k=>{const e=f.querySelector(`[data-ff="${k}"]`);return e?e.value:''};
-  f.querySelectorAll('[data-se]').forEach(e=>{const [k,v]=e.dataset.se.split(':');e.style.display=v.split('|').includes(val(k))?'':'none'});
+  f.querySelectorAll('[data-se]').forEach(e=>{e.style.display=e.dataset.se.split(';').every(c=>{const [k,v]=c.split(':');return v.split('|').includes(val(k))})?'':'none'});
   f.querySelectorAll('[data-nse]').forEach(e=>{const [k,v]=e.dataset.nse.split(':');e.style.display=v.split('|').includes(val(k))?'none':''});
   if(SF&&SF.t==='consultas'){const t=f.querySelector('[data-ff=tipo]'),st=f.querySelector('[data-ff=estado]');
     if(t&&st){const ex=TIPOS_EXAME.includes(t.value),o=st.querySelector('option[value=pormarcar]');if(o)o.hidden=!ex;if(!ex&&st.value==='pormarcar'){st.value='marcada';condS()}}}}
 document.addEventListener('change',e=>{const el=e.target;
-  if(el.closest&&el.closest('#sForm')){if(el.dataset.ff==='medico'&&el.value==='__novo'){guardarS(true);return}condS();return}
+  if(el.closest&&el.closest('#sForm')){if(el.dataset.ff==='medico'&&el.value==='__novo'){guardarS('medico');return}if(el.dataset.ff==='doenca'&&el.value==='__novoR'){guardarS('rel');return}condS();return}
   if(el.dataset&&el.dataset.sf){const P=SP(el.dataset.p);P.ficha[el.dataset.sf]=el.value.trim();save();if(['nome','nasc','utente','alergias'].includes(el.dataset.sf)){const t=document.querySelector('.s-topo');if(t)t.outerHTML=topoSaude(el.dataset.p)}}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-segf] .seg');if(!b)return;const w=b.parentNode;w.querySelectorAll('.seg').forEach(x=>x.classList.toggle('on',x===b));w.nextElementSibling.value=b.dataset.v;condS()});
-function guardarS(irMedico){
+function guardarS(ir){
   const {p,t,id}=SF,P=SP(p),f=document.getElementById('sForm'),o={};
   f.querySelectorAll('[data-ff]').forEach(e=>o[e.dataset.ff]=e.value.trim());
   if(t==='meds'){o.horas=[...f.querySelectorAll('#sHoras input')].map(i=>i.value).filter(Boolean);o.horas=[...new Set(o.horas)].sort();
@@ -2159,7 +2178,10 @@ function guardarS(irMedico){
     if(o.freq==='semana'&&!o.dias.length){toast('Escolha pelo menos um dia da semana');return}
     if(o.freq!=='sos'&&!o.horas.length){toast('Escreva pelo menos uma hora de toma');return}
     if(o.freq!=='semana')delete o.dias}
-  if(irMedico){delete o.medico;const volta={p,t,id,o};modalSaude(p,'medicos');SF.volta=volta;return}
+  if(t==='consultas'){const r=o.doenca||'';if(r.startsWith('c:')){o.rel=r.slice(2);o.doenca=''}else{o.rel='';if(r==='__novoR')o.doenca=''}}
+  /* ir criar um médico ou um registo novo e depois voltar a este formulário (SF.volta guarda o que já estava escrito) */
+  if(ir==='medico'||ir===true){delete o.medico;const volta={p,t,id,o,ant:SF.volta};modalSaude(p,'medicos');SF.volta=volta;return}
+  if(ir==='rel'){const volta={p,t,id,o,ant:SF.volta,rel:1};modalSaude(p,'consultas',null,{tipo:'consulta',estado:'marcada'});SF.volta=volta;toast('Registe a consulta, intervenção ou internamento relacionado');return}
   if(t==='consultas'&&o.tipo==='internamento'){if(!o.data){toast('Escolha o dia de entrada');return}if(o.fim&&o.fim<o.data){toast('A alta não pode ser antes da entrada');return}if(o.estado!=='desmarcada')o.estado=o.fim?'feita':'marcada'}
   if(t==='consultas'&&o.tipo!=='internamento'){delete o.fim;delete o.servico}
   if(t==='consultas'){if(o.estado==='pormarcar'&&TIPOS_EXAME.includes(o.tipo)){o.data='';o.hora=''}else if(o.estado==='pormarcar')o.estado='marcada';if(!TIPOS_EXAME.includes(o.tipo))o.pedido=''}
@@ -2167,13 +2189,14 @@ function guardarS(irMedico){
   if(!o[obrig]){toast(t==='medicoes'?'Escreva o valor':t==='consultas'?'Escolha a data':'Escreva o nome');return}
   let novoId=id;
   if(id){const x=P[t].find(x=>x.id===id);Object.assign(x,o)}else{novoId=uid();P[t].push(Object.assign({id:novoId,criado:hojeK()},o))}save();
-  if(t==='medicos'&&SF.volta){const v=SF.volta;modalSaude(v.p,v.t,v.id,Object.assign({},v.o,{medico:novoId}));toast('Médico guardado');return}
+  if(SF.volta&&(t==='medicos'||(t==='consultas'&&SF.volta.rel))){const v=SF.volta;
+    modalSaude(v.p,v.t,v.id,Object.assign({},v.o,t==='medicos'?{medico:novoId}:{rel:novoId,doenca:''}));SF.volta=v.ant;toast(t==='medicos'?'Médico guardado':'Registo guardado e ligado');return}
   fechar();render();toast('Guardado');
 }
 const AS={
   ...AS_ANX,
   ...AS_COP,
-  sNovo:e=>modalSaude(e.dataset.p,e.dataset.t,null,e.dataset.g==='exame'?{tipo:'analises',estado:'pormarcar'}:e.dataset.g==='consulta'?{tipo:'consulta',estado:'marcada'}:e.dataset.g==='internamento'?{tipo:'internamento',estado:'marcada'}:null),
+  sNovo:e=>modalSaude(e.dataset.p,e.dataset.t,null,e.dataset.g==='exame'?{tipo:'analises',estado:'pormarcar'}:e.dataset.g==='consulta'?{tipo:'consulta',estado:'marcada'}:e.dataset.g==='internamento'?{tipo:'internamento',estado:'marcada'}:e.dataset.g==='intervencao'?{tipo:'intervencao',estado:'marcada'}:null),
   sAlta:e=>{const P=SP(e.dataset.p),c=P.consultas.find(x=>x.id===e.dataset.id);if(!c)return;
     confirmar(`Registar a <b>alta hoje</b> (${dataPT(hojeK())})? Depois pode corrigir a data e juntar a nota de alta.`,()=>{c.fim=hojeK();c.estado='feita';save();fechar();render();toast('Alta registada');setTimeout(()=>modalSaude(e.dataset.p,'consultas',c.id),300)},'Sim, teve alta')},
   sMarcar:e=>modalSaude(e.dataset.p,'consultas',e.dataset.id,{estado:'marcada',data:hojeK()}),
@@ -2185,7 +2208,7 @@ const AS={
       comDesfazer('Apagado',()=>{const P2=SP(p);P2[t]=P2[t].filter(y=>y.id!==id);
         if(t==='medicos')['doencas','meds','consultas'].forEach(k=>P2[k].forEach(y=>{if(y.medico===id)y.medico=''}));
         if(t==='doencas')['meds','consultas'].forEach(k=>P2[k].forEach(y=>{if(y.doenca===id)y.doenca=''}));
-        if(t==='consultas')P2.consultas.forEach(y=>{if(y.pedido===id)y.pedido=''})},
+        if(t==='consultas')P2.consultas.forEach(y=>{if(y.pedido===id)y.pedido='';if(y.rel===id)y.rel=''})},
         /* os ficheiros dos anexos só são apagados quando já não é possível desfazer */
         ()=>{if(!SP(p)[t].some(y=>y.id===id))(x.anexos||[]).forEach(a=>apagarPartes(a))})})},
   sMaisHora:e=>{const w=document.getElementById('sHoras');if(!w)return;const h=e.dataset.h||'';
