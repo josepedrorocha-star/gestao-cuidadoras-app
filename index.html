@@ -585,7 +585,7 @@ function marcarSujos(){
 function save(){
   S.alteradoEm=new Date().toISOString();
   if(!DB){try{localStorage.setItem(KEY+'.local',JSON.stringify(S))}catch(e){}estado();return}
-  marcarSujos();clearTimeout(flushT);flushT=setTimeout(enviar,500);estado();
+  marcarSujos();guardaCache();clearTimeout(flushT);flushT=setTimeout(enviar,500);estado();
 }
 /* JSON estável (chaves ordenadas) para comparar versões sem falsos positivos */
 function sJ(x){if(x===undefined)return 'undefined';if(x===null||typeof x!=='object')return JSON.stringify(x);if(Array.isArray(x))return '['+x.map(sJ).join(',')+']';return '{'+Object.keys(x).filter(k=>x[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+sJ(x[k])).join(',')+'}'}
@@ -611,6 +611,7 @@ const EU='v'+uid()+uid();
 const dorme=ms=>new Promise(r=>setTimeout(r,ms));
 /* um de cada vez: reserva curta num documento de trava antes de ler-juntar-gravar */
 async function comTrava(nome,fn){
+  if(!navigator.onLine)throw {code:'unavailable'};
   const trava=DB.doc('travas/'+nome);
   for(let t=0;t<25;t++){
     let r;try{r=await trava.acquire({holder:EU,ttlMs:2000})}catch(e){r={acquired:true}}
@@ -620,19 +621,21 @@ async function comTrava(nome,fn){
   return await fn();
 }
 async function enviar(){
-  if(!DB||aEnviar)return;aEnviar=true;
+  if(!DB||aEnviar)return;
+  if(!navigator.onLine){semRede=true;estado();return}
+  aEnviar=true;let parar=false;
   try{
     while(sujos.size){
       const id=[...sujos][0];sujos.delete(id);emCurso.add(id);aGravar++;estado();
       try{
         if(id==='saude')await comTrava('saude',async()=>{
-          const ref=DB.doc('app/saude'),snap=await ref.get();let d=clone(S.saude||{});
+          const ref=DB.doc('app/saude'),snap=await ref.get({source:'server'});let d=clone(S.saude||{});
           if(snap.exists&&!enviado.saude){S.saude=clone(snap.data());enviado.saude=sJ(snap.data());juntou=true;return}
           if(snap.exists&&enviado.saude){const Rm=snap.data(),B=JSON.parse(enviado.saude);
             if(!igual(Rm,B)){d=merge3(B,d,clone(Rm));S.saude=d;juntou=true}}
           await ref.set(d);enviado.saude=sJ(d)});
         else if(id==='estado')await comTrava('estado',async()=>{
-          const ref=DB.doc('app/estado'),snap=await ref.get();let d=clone(estadoDoc());
+          const ref=DB.doc('app/estado'),snap=await ref.get({source:'server'});let d=clone(estadoDoc());
           if(snap.exists&&!enviado.estado){const Rm=snap.data();S.colabs=clone(Rm.colabs||[]);S.config=clone(Rm.config||S.config);S.versao=Rm.versao||S.versao;enviado.estado=sJ(Rm);fcache={};migrar();juntou=true;return}
           if(!(d.colabs||[]).length&&snap.exists&&((snap.data().colabs)||[]).length>0){erroSync='gravação bloqueada';toast('Não gravei: a lista de pessoas ficaria vazia. Recarregue a página.');return}
           if(snap.exists&&enviado.estado){const Rm=snap.data(),B=JSON.parse(enviado.estado);
@@ -640,23 +643,25 @@ async function enviar(){
           await ref.set(d);enviado.estado=sJ(d)});
         else{const k=id.slice(2);
           if(S.meses[k])await comTrava('m-'+k,async()=>{
-            const ref=DB.doc('meses/'+k),snap=await ref.get();let d=clone(S.meses[k]);
+            const ref=DB.doc('meses/'+k),snap=await ref.get({source:'server'});let d=clone(S.meses[k]);
             if(snap.exists&&!enviado.meses[k]){const Rm=snap.data();d=merge3({},d,clone(Rm));S.meses[k]=d;juntou=true}
             if(snap.exists&&enviado.meses[k]){const Rm=snap.data(),B=JSON.parse(enviado.meses[k]);
               if(!igual(Rm,B)){d=merge3(B,d,clone(Rm));S.meses[k]=d;juntou=true}}
             await ref.set(d);enviado.meses[k]=sJ(d)});
-          else{await DB.doc('meses/'+k).delete();delete enviado.meses[k]}}
-        erroSync='';
+          else{await DB.doc('meses/'+k).get({source:'server'});await DB.doc('meses/'+k).delete();delete enviado.meses[k]}}
+        erroSync='';semRede=false;
       }catch(e){
-        if(e&&e.code==='unavailable'){sujos.add(id);await new Promise(r=>setTimeout(r,1500+Math.random()*1500))}
+        /* sem internet: a alteração fica guardada neste aparelho e é enviada quando a ligação voltar */
+        if(e&&(e.code==='unavailable'||e.code==='deadline-exceeded'||!navigator.onLine)){sujos.add(id);semRede=true;parar=true;agendaEnvio(15000)}
         else{erroSync=e&&(e.code==='invalid_argument'||e.code==='permission-denied')?'sem permissão para alterar':(e&&e.message)||'erro';toast('Não foi possível guardar: '+erroSync)}
       }finally{aGravar--;emCurso.delete(id)}
-      marcarSujos();
+      marcarSujos();if(parar)break;
     }
-  }finally{aEnviar=false;estado();if(juntou){juntou=false;pedirRender()}}
+  }finally{aEnviar=false;estado();guardaCache();if(juntou){juntou=false;pedirRender()}}
 }
 let renderPend=false;
 function pedirRender(){
+  guardaCache();
   const a=document.activeElement;
   if(a&&document.getElementById('app').contains(a)&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)){renderPend=true;return}
   render();
@@ -673,7 +678,7 @@ function criarDB(fs){
   const emb=s=>({exists:s.exists,id:s.id,metadata:s.metadata,
     data:()=>{const x=s.data();if(!x)return undefined;return typeof x.j==='string'?JSON.parse(x.j):x}});
   const doc=p=>{const r=fs.doc(p);return{
-    get:async()=>emb(await r.get()),
+    get:async o=>emb(await r.get(o)),
     set:d=>{const j=JSON.stringify(d);
       if(j.length>LIM)return Promise.reject({code:'too-big',message:'documento demasiado grande ('+p+')'});
       return r.set({j,em:firebase.firestore.FieldValue.serverTimestamp(),por:(utilizador&&utilizador.email)||''})},
@@ -705,7 +710,7 @@ async function entrarGoogle(){
 function sair(){
   confirmar('Sair da conta <b>'+esc((utilizador&&utilizador.email)||'')+'</b> neste aparelho?',async()=>{
     try{await firebase.auth().signOut()}catch(e){}
-    try{await firebase.firestore().clearPersistence()}catch(e){}
+    apagaCache();try{await firebase.firestore().clearPersistence()}catch(e){}
     location.reload()},'Sim, sair');
 }
 async function ligar(){
@@ -725,18 +730,41 @@ async function ligar(){
     entrada='ok';render();ligarBase(criarDB(fs));
   });
 }
+/* ---------- sem internet: cópia dos dados neste aparelho ----------
+   Guarda os dados, a última versão enviada (base da junção) e as alterações por enviar.
+   Sem rede, a app abre e edita a partir desta cópia; quando a rede volta, envia com junção (lê sempre o servidor antes de gravar). */
+let semRede=!navigator.onLine,servidorOk=false,daCache=false,envioT=null,cacheT=null;
+const chaveCache=()=>KEY+'.cache.'+String((utilizador&&utilizador.email)||'').toLowerCase();
+function guardaCache(){clearTimeout(cacheT);cacheT=setTimeout(()=>{
+  if(!DB||!carregado.estado||!carregado.meses||!carregado.saude)return;
+  try{localStorage.setItem(chaveCache(),JSON.stringify({v:1,em:new Date().toISOString(),versao:S.versao,colabs:S.colabs,config:S.config,meses:S.meses,saude:S.saude,enviado,sujos:[...new Set([...sujos,...emCurso])]}))}catch(e){}},400)}
+function leCache(){try{return JSON.parse(localStorage.getItem(chaveCache())||'null')}catch(e){return null}}
+function apagaCache(){try{Object.keys(localStorage).filter(k=>k.startsWith(KEY+'.cache.')).forEach(k=>localStorage.removeItem(k))}catch(e){}}
+function agendaEnvio(ms){clearTimeout(envioT);envioT=setTimeout(()=>{if(sujos.size)enviar()},ms)}
+window.addEventListener('online',()=>{semRede=false;estado();if(sujos.size){toast('Ligação de volta: a enviar as alterações…');agendaEnvio(800)}});
+window.addEventListener('offline',()=>{semRede=true;estado()});
 /* erro da base: mostra-o no topo (não é escondido pelo "A demorar…") e escreve o motivo na consola */
 function falhaBase(e){modo='erro';erroSync=(e&&e.code)||'erro';try{console.error('[Gestão de Cuidadoras] erro da base de dados:',e&&e.code,e&&e.message)}catch(_){}estado();pedirRender()}
 function ligarBase(db){
-  DB=db;modo='a ligar';estado();
-  const t=setTimeout(()=>{if(!carregado.estado&&modo!=='erro'){modo='lento';estado()}},10000);
+  DB=db;modo='a ligar';
+  const c=leCache();
+  if(c&&Array.isArray(c.colabs)){
+    S.colabs=c.colabs;S.config=c.config||S.config;S.versao=c.versao||S.versao;S.meses=c.meses||{};S.saude=c.saude||{};
+    const e=c.enviado||{};enviado.estado=e.estado||null;enviado.saude=e.saude||null;enviado.meses=e.meses||{};
+    (c.sujos||[]).forEach(x=>sujos.add(x));carregado.estado=carregado.meses=carregado.saude=true;daCache=true;migrar();fcache={};
+    if(sujos.size)agendaEnvio(1500);
+    render();
+  }
+  estado();
+  const t=setTimeout(()=>{if(!servidorOk&&modo!=='erro'){modo='lento';estado()}},10000);
   db.doc('app/estado').onSnapshot(snap=>{
     if(snap.exists){
       const d=snap.data(),j=sJ(d);
       if(!sujos.has('estado')&&!emCurso.has('estado')&&j!==enviado.estado){S.colabs=clone(d.colabs||[]);S.config=clone(d.config||S.config);S.versao=d.versao||4;enviado.estado=j;fcache={};migrar();pedirRender()}
       else enviado.estado=enviado.estado||j;
     }
-    if(!snap.metadata.fromCache){carregado.estado=true;clearTimeout(t);modo='ok';if(!snap.exists)pedirRender()}
+    if(!snap.metadata.fromCache){carregado.estado=true;clearTimeout(t);modo='ok';servidorOk=true;semRede=false;if(!snap.exists)pedirRender();if(sujos.size)agendaEnvio(500)}
+    else if(servidorOk&&!navigator.onLine)semRede=true;
     estado();
   },falhaBase);
   db.doc('app/saude').onSnapshot(snap=>{
@@ -762,7 +790,9 @@ function estado(){
   if(modo==='local'){t='⚠️ Só neste browser';c+=' aviso';tt='Sem ligação à base partilhada: as alterações ficam só neste browser'}
   else if(modo==='erro'&&/permission/.test(erroSync)){t='⚠️ Sem permissão na base de dados';c+=' aviso';tt='O Firebase recusou o acesso: confirme as Regras do Firestore ('+erroSync+')'}
   else if(modo==='erro'){t='⚠️ Ligação perdida';c+=' aviso';tt='Recarregue a página ('+erroSync+')'}
-  else if(!carregado.estado){t=modo==='lento'?'⏳ A demorar…':'⏳ A carregar…'}
+  else if(semRede||(daCache&&!servidorOk&&modo==='lento')){const n=sujos.size+emCurso.size;t='📴 Sem internet'+(n?' · '+n+' '+(n===1?'alteração':'alterações')+' por enviar':'');c+=' aviso';tt=n?'As alterações ficam guardadas neste aparelho e são enviadas quando a internet voltar':'A mostrar os dados guardados neste aparelho'}
+  else if(!carregado.estado||(!servidorOk&&!daCache)){t=modo==='lento'?'⏳ A demorar…':'⏳ A carregar…'}
+  else if(!servidorOk){t='⏳ A ligar…';tt='A mostrar os dados guardados neste aparelho enquanto liga ao Firebase'}
   else if(aGravar||sujos.size){t='↻ A guardar…'}
   else if(erroSync){t='⚠️ '+erroSync;c+=' aviso'}
   else {t='☁️ Guardado';tt='Tudo guardado e partilhado'}
@@ -1650,7 +1680,7 @@ function modalAj(cid,dataK,voltar){
 }
 
 /* ---------- ícones modernos (substituem os emojis) ---------- */
-const IC_P={"hospital":"<path d=\"M12 6v4M14 14h-4M14 18h-4M14 8h-4\"/><path d=\"M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2\"/><path d=\"M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18\"/>","flask":"<path d=\"M10 2v7.31M14 9.3V2M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0M5.52 16h12.96\"/>","paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","mail":"<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/><path d=\"m22 7-10 6L2 7\"/>","home":"<path d=\"M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>","hour":"<path d=\"M5 22h14M5 2h14M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2\"/>","cal": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/>", "doc": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6M16 13H8M16 17H8M10 9H8\"/>", "money": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>", "warn": "<path d=\"M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"/><path d=\"M12 9v4M12 17h.01\"/>", "x": "<path d=\"M18 6 6 18M6 6l12 12\"/>", "check": "<path d=\"M20 6 9 17l-5-5\"/>", "moon": "<path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"/>", "pen": "<path d=\"M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z\"/>", "sunset": "<path d=\"M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0\"/>", "sunrise": "<path d=\"M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/>", "bank": "<path d=\"M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z\"/>", "gift": "<rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5\"/>", "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>", "set": "<path d=\"M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6\"/>", "save": "<path d=\"M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z\"/><path d=\"M17 21v-8H7v8M7 3v5h8\"/>", "file": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6\"/>", "note": "<path d=\"M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z\"/><path d=\"M15 3v6h6\"/>", "pin": "<path d=\"M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z\"/>", "phone": "<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"2\"/><path d=\"M12 18h.01\"/>", "ban": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m4.9 4.9 14.2 14.2\"/>", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75\"/>", "heart": "<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/>", "folder": "<path d=\"m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2\"/>", "up": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12\"/>", "chart": "<path d=\"M3 3v18h18M18 17V9M13 17V5M8 17v-3\"/>", "clip": "<rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/>", "tel": "<path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"/>", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "minus": "<path d=\"M5 12h14\"/>", "cloud": "<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>", "down": "<path d=\"m22 17-8.5-8.5-5 5L2 7M16 17h6v-6\"/>", "scale": "<path d=\"m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2\"/>", "menu": "<path d=\"M4 6h16M4 12h16M4 18h16\"/>", "zap": "<path d=\"M13 2 3 14h9l-1 8 10-12h-9l1-8z\"/>", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0\"/>", "msg": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>", "print": "<path d=\"M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2\"/><rect x=\"6\" y=\"14\" width=\"12\" height=\"8\"/>", "bulb": "<path d=\"M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4\"/>", "shield": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/>", "user": "<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>", "palette": "<circle cx=\"13.5\" cy=\"6.5\" r=\".5\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.56-2.5 5.56-5.56C22 6.04 17.5 2 12 2z\"/>"},IC_M={"🏥":"hospital","🧪":"flask","📎":"paperclip","✉":"mail","🏠":"home","⏰":"clock","⏱":"clock","⏳":"hour","🗓": "cal", "📅": "cal", "🧾": "doc", "💶": "money", "⚠": "warn", "✕": "x", "✗": "x", "✓": "check", "🌙": "moon", "✎": "pen", "🌇": "sunset", "🌅": "sunrise", "☀": "sun", "🏛": "bank", "🎄": "gift", "🏖": "plane", "⚙": "set", "💾": "save", "📄": "file", "📝": "note", "📌": "pin", "📱": "phone", "🚫": "ban", "👥": "users", "👪": "heart", "📂": "folder", "📤": "up", "📊": "chart", "📋": "clip", "📞": "tel", "🔗": "link", "➕": "plus", "➖": "minus", "☁": "cloud", "📉": "down", "⚖": "scale", "☰": "menu", "⚡": "zap", "🔔": "bell", "💬": "msg", "🖨": "print", "💡": "bulb", "🛡": "shield", "👤": "user", "🎨": "palette"};
+const IC_P={"wifioff":"<path d=\"M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20\"/>","hospital":"<path d=\"M12 6v4M14 14h-4M14 18h-4M14 8h-4\"/><path d=\"M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2\"/><path d=\"M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18\"/>","flask":"<path d=\"M10 2v7.31M14 9.3V2M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0M5.52 16h12.96\"/>","paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","mail":"<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/><path d=\"m22 7-10 6L2 7\"/>","home":"<path d=\"M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>","hour":"<path d=\"M5 22h14M5 2h14M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2\"/>","cal": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/>", "doc": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6M16 13H8M16 17H8M10 9H8\"/>", "money": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>", "warn": "<path d=\"M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"/><path d=\"M12 9v4M12 17h.01\"/>", "x": "<path d=\"M18 6 6 18M6 6l12 12\"/>", "check": "<path d=\"M20 6 9 17l-5-5\"/>", "moon": "<path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"/>", "pen": "<path d=\"M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z\"/>", "sunset": "<path d=\"M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0\"/>", "sunrise": "<path d=\"M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/>", "bank": "<path d=\"M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z\"/>", "gift": "<rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5\"/>", "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>", "set": "<path d=\"M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6\"/>", "save": "<path d=\"M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z\"/><path d=\"M17 21v-8H7v8M7 3v5h8\"/>", "file": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6\"/>", "note": "<path d=\"M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z\"/><path d=\"M15 3v6h6\"/>", "pin": "<path d=\"M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z\"/>", "phone": "<rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"2\"/><path d=\"M12 18h.01\"/>", "ban": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m4.9 4.9 14.2 14.2\"/>", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75\"/>", "heart": "<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"/>", "folder": "<path d=\"m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2\"/>", "up": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12\"/>", "chart": "<path d=\"M3 3v18h18M18 17V9M13 17V5M8 17v-3\"/>", "clip": "<rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/>", "tel": "<path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"/>", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "minus": "<path d=\"M5 12h14\"/>", "cloud": "<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>", "down": "<path d=\"m22 17-8.5-8.5-5 5L2 7M16 17h6v-6\"/>", "scale": "<path d=\"m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2\"/>", "menu": "<path d=\"M4 6h16M4 12h16M4 18h16\"/>", "zap": "<path d=\"M13 2 3 14h9l-1 8 10-12h-9l1-8z\"/>", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0\"/>", "msg": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>", "print": "<path d=\"M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2\"/><rect x=\"6\" y=\"14\" width=\"12\" height=\"8\"/>", "bulb": "<path d=\"M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4\"/>", "shield": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/>", "user": "<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>", "palette": "<circle cx=\"13.5\" cy=\"6.5\" r=\".5\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.56-2.5 5.56-5.56C22 6.04 17.5 2 12 2z\"/>"},IC_M={"📴":"wifioff","🏥":"hospital","🧪":"flask","📎":"paperclip","✉":"mail","🏠":"home","⏰":"clock","⏱":"clock","⏳":"hour","🗓": "cal", "📅": "cal", "🧾": "doc", "💶": "money", "⚠": "warn", "✕": "x", "✗": "x", "✓": "check", "🌙": "moon", "✎": "pen", "🌇": "sunset", "🌅": "sunrise", "☀": "sun", "🏛": "bank", "🎄": "gift", "🏖": "plane", "⚙": "set", "💾": "save", "📄": "file", "📝": "note", "📌": "pin", "📱": "phone", "🚫": "ban", "👥": "users", "👪": "heart", "📂": "folder", "📤": "up", "📊": "chart", "📋": "clip", "📞": "tel", "🔗": "link", "➕": "plus", "➖": "minus", "☁": "cloud", "📉": "down", "⚖": "scale", "☰": "menu", "⚡": "zap", "🔔": "bell", "💬": "msg", "🖨": "print", "💡": "bulb", "🛡": "shield", "👤": "user", "🎨": "palette"};
 const icSvg=n=>'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+IC_P[n]+'</svg>';
 const IC_RE=new RegExp('('+Object.keys(IC_M).join('|')+')\\uFE0F?','gu');
 function iconizar(root){
@@ -1854,6 +1884,7 @@ async function lerAnexo(a){
 async function lerB64Anexo(a){let b64='';for(let i=0;i<(a.partes||1);i++){const s=await DB.doc('anexos/'+a.id+'-'+i).get();if(!s.exists)throw {code:'em-falta'};b64+=(s.data()||{}).d||''}return b64}
 async function anexar(p,cid,files){
   if(!DB||!carregado.saude){toast('Espere que os dados acabem de carregar e tente de novo.');return}
+  if(semRede||!navigator.onLine||!servidorOk){toast('Sem internet: os anexos só podem ser enviados com ligação.');return}
   if(anxOcupado){toast('Ainda estou a enviar o anexo anterior. Espere um pouco.');return}
   anxOcupado=true;let feitos=0;
   try{for(const f0 of files){
@@ -2466,7 +2497,7 @@ const A={
   instNao:()=>{try{localStorage.setItem(KEY+'.instNao',hojeK())}catch(e){}render()},
   entrarGoogle:()=>entrarGoogle(),
   sair:()=>sair(),
-  sair0:async()=>{try{await firebase.auth().signOut()}catch(e){}location.reload()},
+  sair0:async()=>{apagaCache();try{await firebase.auth().signOut()}catch(e){}location.reload()},
   recarregar:()=>location.reload(),
   baixarIcone:()=>baixarIcone(),
   subMes:e=>{subMes=e.dataset.v;try{localStorage.setItem(KEY+'.subMes',subMes)}catch(_){}render();window.scrollTo(0,0)},

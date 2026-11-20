@@ -1,12 +1,16 @@
 /* Gestão de Cuidadoras — service worker.
    Guarda a app no aparelho para abrir depressa. Os DADOS não passam por aqui: vão sempre para o Firebase. */
-const VERSAO = 'gc-2026-11-20g';
+const VERSAO = 'gc-2026-11-20h';
 const BASE = ['./', './index.html', './firebase-config.js', './manifest.webmanifest',
   './icones/icone-192.png', './icones/icone-512.png', './icones/apple-touch-icon.png'];
 const EXTERNOS = ['https://www.gstatic.com/firebasejs/', 'https://cdnjs.cloudflare.com/ajax/libs/'];
+/* bibliotecas guardadas logo na instalação, para a app abrir sem internet */
+const LIBS = ['app', 'auth', 'firestore'].map(n => 'https://www.gstatic.com/firebasejs/10.14.1/firebase-' + n + '-compat.js');
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSAO).then(c => c.addAll(BASE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSAO).then(c => c.addAll(BASE).then(() =>
+    Promise.allSettled(LIBS.map(u => fetch(u, { mode: 'no-cors' }).then(r => c.put(u, r))))))
+    .then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
