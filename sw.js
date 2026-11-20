@@ -1,6 +1,6 @@
 /* Gestão de Cuidadoras — service worker.
    Guarda a app no aparelho para abrir depressa. Os DADOS não passam por aqui: vão sempre para o Firebase. */
-const VERSAO = 'gc-2026-11-20m';
+const VERSAO = 'gc-2026-11-20o';
 const BASE = ['./', './index.html', './firebase-config.js', './manifest.webmanifest',
   './icones/icone-192.png', './icones/icone-512.png', './icones/apple-touch-icon.png'];
 const EXTERNOS = ['https://www.gstatic.com/firebasejs/', 'https://cdn.jsdelivr.net/npm/'];
@@ -22,9 +22,9 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET') return;
   const url = new URL(r.url);
   const local = url.origin === self.location.origin;
-  /* a página e a configuração: primeiro a internet (para receber sempre a versão nova), senão a cópia guardada */
+  /* a página e a configuração: primeiro a internet (sem usar a memória do navegador, para receber sempre a versão nova), senão a cópia guardada */
   if (local && (r.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html') || url.pathname.endsWith('firebase-config.js'))) {
-    e.respondWith(fetch(r).then(res => {
+    e.respondWith(fetch(r, { cache: 'no-cache' }).then(res => {
       if (res.ok) { const cp = res.clone(); caches.open(VERSAO).then(c => c.put(r, cp)); }
       return res;
     }).catch(() => caches.match(r).then(x => x || caches.match('./index.html'))));

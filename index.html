@@ -182,6 +182,14 @@ details.sec>summary::-webkit-details-marker{display:none}
 details.sec:not([open])>summary .seta{transform:rotate(-90deg)}
 .sec-t{font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .sec-x{margin-left:auto;display:flex;align-items:center;gap:8px}
+/* subtítulos dentro de uma caixa (ex.: Marcação / Resultados nos exames) */
+.sub-t{font-weight:700;font-size:15px;margin:2px 0 8px;display:flex;align-items:center;gap:6px}
+.sub-t2{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+/* seta, ícone e título sempre na mesma linha (o título parte em várias linhas se for comprido) */
+details.sec>summary{flex-wrap:nowrap}
+details.sec>summary .sec-t{flex:1 1 0;min-width:0;flex-wrap:nowrap}
+details.sec>summary .sec-x{flex:0 1 auto;max-width:48%;justify-content:flex-end;text-align:right;flex-wrap:wrap}
+details.sec>summary .sec-t>svg,details.sec>summary .sec-t>.ic{flex:none}
 details.sec[open]>.sec-b{margin-top:12px}
 details.sec.card{margin-bottom:12px}
 details.sec.plain{margin:18px 0 6px}
@@ -1868,11 +1876,12 @@ function vSaude(p){
   if(!porM.length&&!marcE.length)eh+=`<p class="small mute">Não há exames nem análises por marcar ou marcados.</p>`;
   if(desE.length)eh+=`<details class="s-mais"><summary>Desmarcados (${desE.length})</summary>${desE.map(c=>linhaConsulta(p,P,c)).join('')}</details>`;
   eh+=`<div class="bar" style="margin-top:10px"><button class="btn p" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="exame">+ Exame ou análise</button></div>`;
-  h+=sec('s-'+p+'-exames','🧪 Marcação de exames e análises',eh,{extra:`<span class="small mute">${porM.length?porM.length+' por marcar · ':''}${marcE.length} marcado(s)</span>`});
   let rh=feitE.length?(semRes.length?`<div class="help">Quando receber o resultado, carregue em <b>✎ Editar</b> para o escrever, ou anexe o PDF ou a fotografia.</div>`:'')+feitE.map(c=>linhaConsulta(p,P,c)).join('')
     :`<p class="small mute">Ainda não há exames feitos. Quando marcar um exame como <b>✓ Realizado</b>, ele passa para aqui, onde pode juntar o resultado.</p>`;
   if(!isPhone()&&P.consultas.length)rh+=`<p class="small mute anx-dica">📎 Para anexar um PDF ou fotografia, arraste o ficheiro para cima do exame ou da consulta, ou passe o rato por cima e carregue <b>Ctrl+V</b>.</p>`;
-  h+=sec('s-'+p+'-resultados','📄 Resultados de exames e análises',rh,{extra:`<span class="small mute">${semRes.length?semRes.length+' à espera do resultado · ':''}${feitE.length} feito(s)</span>`});
+  /* uma só caixa (uma seta) com duas partes: Marcação e Resultados */
+  h+=sec('s-'+p+'-exames','🧪 Exames e análises',`<div class="sub-t">📅 Marcação</div>${eh}<div class="sub-t sub-t2">📄 Resultados</div>${rh}`,
+    {extra:`<span class="small mute">${[porM.length?porM.length+' por marcar':'',marcE.length?marcE.length+' marcado(s)':'',semRes.length?semRes.length+' à espera do resultado':''].filter(Boolean).join(' · ')||feitE.length+' feito(s)'}</span>`});
   // MÉDICOS
   let medh=P.medicos.length?P.medicos.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(m=>{
     const nD=P.doencas.filter(d=>d.medico===m.id&&!d.fim).length,nM=P.meds.filter(x=>x.medico===m.id&&medAtivo(x,hj)).length;
@@ -2099,12 +2108,15 @@ document.addEventListener('paste',e=>{
 
 /* formulários */
 /* especialidades já escritas (médicos e consultas do Pai e da Mãe), para escolher numa lista */
-function espsTodas(){const m=new Map();['pai','mae'].forEach(p=>{const P=SP(p);
-  P.medicos.forEach(x=>{const e=(x.especialidade||'').trim();if(e&&!m.has(e.toLowerCase()))m.set(e.toLowerCase(),e)});
-  P.consultas.forEach(x=>{const e=(x.esp||'').trim();if(e&&!m.has(e.toLowerCase()))m.set(e.toLowerCase(),e)})});
+/* (o mesmo para os locais: hospitais, clínicas, centros de saúde) */
+function valoresTodos(tipo){const m=new Map(),ks=tipo==='local'?['local','local']:['especialidade','esp'];['pai','mae'].forEach(p=>{const P=SP(p);
+  P.medicos.forEach(x=>{const e=(x[ks[0]]||'').trim();if(e&&!m.has(e.toLowerCase()))m.set(e.toLowerCase(),e)});
+  P.consultas.forEach(x=>{const e=(x[ks[1]]||'').trim();if(e&&!m.has(e.toLowerCase()))m.set(e.toLowerCase(),e)})});
   return [...m.values()].sort((a,b)=>a.localeCompare(b,'pt'))}
-/* se a especialidade já existe com outra grafia (maiúsculas), usa a que já existe */
-const espIgual=e=>{if(!e)return e;const x=espsTodas().find(y=>y.toLowerCase()===e.toLowerCase());return x||e.charAt(0).toUpperCase()+e.slice(1)};
+const espsTodas=()=>valoresTodos('esp');
+/* se já existe com outra grafia (maiúsculas), usa a que já existe; se é nova, primeira letra maiúscula */
+const valIgual=(tipo,e)=>{if(!e)return e;const x=valoresTodos(tipo).find(y=>y.toLowerCase()===e.toLowerCase());return x||e.charAt(0).toUpperCase()+e.slice(1)};
+const espIgual=e=>valIgual('esp',e);
 /* "Relacionada com": doenças, depois consultas/intervenções/internamentos já registados, e no fim "+ Novo registo…" */
 function relOpcoes(P){const cur=SF&&SF.id,v=(SF&&SF.relAtual)||'';
   const regs=P.consultas.filter(x=>x.id!==cur&&(!ehExame(x)||x.id===v)).sort((a,b)=>(b.data||'9')<(a.data||'9')?-1:1);
@@ -2132,11 +2144,11 @@ function camposS(t,P){
       {k:'data',l:'Data (no internamento: dia de entrada)',t:'date',def:hojeK(),nse:['estado','pormarcar']},{k:'hora',l:'Hora',t:'time',nse:['estado','pormarcar']},
       {k:'fim',l:'Data da alta',t:'date',se:['tipo','internamento'],dica:'Deixe vazio enquanto estiver internado'},{k:'servico',l:'Serviço',ph:'ex.: Medicina Interna',se:['tipo','internamento']},
       {k:'pedido',l:'Pedido na consulta de',t:'sel',o:[['','— Nenhuma —'],...P.consultas.filter(x=>!ehExame(x)&&x.data).sort((a,b)=>a.data<b.data?1:-1).slice(0,30).map(x=>[x.id,dataPT(x.data)+' · '+(TIPO_C[x.tipo]||'Consulta')+((medicoS(P,x.medico)||{}).especialidade?' de '+medicoS(P,x.medico).especialidade:x.esp?' de '+x.esp:'')])],w:1,se:['tipo','exame|analises|outro']},
-      {k:'medico',l:'Médico',t:'sel',o:meds,w:1},{k:'esp',l:'Especialidade (se não escolheu médico)',ph:'Escolha ou escreva',lista:'dlEsp'},{k:'local',l:'Local',ph:'ex.: Hospital de Portimão'},
+      {k:'medico',l:'Médico',t:'sel',o:meds,w:1},{k:'esp',l:'Especialidade (se não escolheu médico)',ph:'Escolha ou escreva',lista:'esp'},{k:'local',l:'Local',lista:'local'},
       {k:'doenca',l:'Relacionada com',t:'sel',w:1,vf:v=>v.rel?'c:'+v.rel:(v.doenca||''),o:relOpcoes(P)},{k:'motivo',l:'Motivo',ph:'ex.: revisão anual',w:1},
       {k:'resultado',l:'Resultado',t:'area',w:1,se:['tipo','exame|analises|outro;estado:feita'],ph:'ex.: colesterol 210; resto normal. Também pode anexar o PDF do resultado.'},
       {k:'notas',l:'Notas / o que o médico disse',t:'area',w:1}],
-    medicos:[{k:'nome',l:'Nome',w:1,ph:'ex.: Dra. Ana Silva'},{k:'especialidade',l:'Especialidade',ph:'Escolha ou escreva',lista:'dlEsp'},{k:'local',l:'Local',ph:'ex.: Hospital de Portimão'},
+    medicos:[{k:'nome',l:'Nome',w:1,ph:'ex.: Dra. Ana Silva'},{k:'especialidade',l:'Especialidade',ph:'Escolha ou escreva',lista:'esp'},{k:'local',l:'Local',lista:'local'},
       {k:'tel',l:'Telefone',t:'tel'},{k:'email',l:'Email',t:'email'},{k:'notas',l:'Notas',t:'area',w:1}],
     medicoes:[{k:'tipo',l:'O que mediu',t:'sel',o:Object.entries(TIPO_MED),def:'tensao',w:1},{k:'data',l:'Data',t:'date',def:hojeK()},{k:'hora',l:'Hora',t:'time',def:'agora'},
       {k:'valor',l:'Valor',ph:'ex.: 130/80',w:1},{k:'notas',l:'Notas',w:1}]
@@ -2162,9 +2174,9 @@ function modalSaude(p,t,id,pre){
       return `<div class="f w"${cond}><span class="small mute" style="font-weight:600">${c.l}</span><div class="s-horas" id="sHoras">${hs.map(x=>horaIn(x)).join('')}</div>
         <div class="bar" style="margin-top:6px"><button type="button" class="btn s" data-a="sMaisHora">+ Outra hora</button>${MOMENTOS.map(([x,n])=>`<button type="button" class="btn s" data-a="sMaisHora" data-h="${x}">${n} ${hh(x)}</button>`).join('')}</div></div>`}
     /* especialidade: lista com todas as já registadas; "+ Outra" mostra uma caixa para escrever uma nova */
-    if(c.lista){const L=espsTodas(),tem=!val||L.some(x=>x.toLowerCase()===String(val).toLowerCase());
-      return `${lab}<select data-espsel>${[['','— Escolher —'],...L.map(x=>[x,x]),['__outra','+ Outra especialidade…']].map(([a,b])=>`<option value="${esc(a)}" ${(tem?a.toLowerCase()===String(val).toLowerCase():a==='__outra')?'selected':''}>${esc(b)}</option>`).join('')}</select>
-        <input type="text" data-ff="${c.k}" value="${esc(val)}" placeholder="Escreva a especialidade" autocomplete="off" style="margin-top:6px${tem?';display:none':''}"></label>`}
+    if(c.lista){const L=valoresTodos(c.lista),tem=!val||L.some(x=>x.toLowerCase()===String(val).toLowerCase());
+      return `${lab}<select data-espsel>${[['','— Escolher —'],...L.map(x=>[x,x]),['__outra',c.lista==='local'?'+ Outro local…':'+ Outra especialidade…']].map(([a,b])=>`<option value="${esc(a)}" ${(tem?a.toLowerCase()===String(val).toLowerCase():a==='__outra')?'selected':''}>${esc(b)}</option>`).join('')}</select>
+        <input type="text" data-ff="${c.k}" value="${esc(val)}" placeholder="${c.lista==='local'?'Escreva o local (ex.: Hospital de Portimão)':'Escreva a especialidade'}" autocomplete="off" style="margin-top:6px${tem?';display:none':''}"></label>`}
     return `${lab}<input type="${c.t||'text'}" data-ff="${c.k}" value="${esc(val)}" placeholder="${esc(c.ph||'')}">${c.dica?`<span class="small mute" style="font-weight:400">${c.dica}</span>`:''}</label>`}).join('');
   abrir(`<h3>${it?'Editar':'Novo'} ${titS(t,v)} — ${esc(nomeS(p)||PESSOAS_S[p])}</h3>
     <div class="fg" style="margin-top:10px" id="sForm">${campos}</div>${t==='consultas'?(it?`<div class="anx-zona" id="anxZona" data-anx-alvo="${p}|${it.id}">${vZona(p,it)}</div>`:`<p class="small mute" style="margin-top:10px">📎 Depois de guardar, pode anexar PDFs ou fotografias.</p>`):''}
@@ -2185,7 +2197,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-segf] .seg
 function guardarS(ir){
   const {p,t,id}=SF,P=SP(p),f=document.getElementById('sForm'),o={};
   f.querySelectorAll('[data-ff]').forEach(e=>o[e.dataset.ff]=e.value.trim());
-  if(o.especialidade)o.especialidade=espIgual(o.especialidade);if(o.esp)o.esp=espIgual(o.esp);
+  if(o.especialidade)o.especialidade=espIgual(o.especialidade);if(o.esp)o.esp=espIgual(o.esp);if(o.local&&(t==='medicos'||t==='consultas'))o.local=valIgual('local',o.local);
   if(t==='meds'){o.horas=[...f.querySelectorAll('#sHoras input')].map(i=>i.value).filter(Boolean);o.horas=[...new Set(o.horas)].sort();
     o.dias=[...f.querySelectorAll('[data-dia]')].filter(i=>i.checked).map(i=>+i.dataset.dia);
     if(o.freq==='semana'&&!o.dias.length){toast('Escolha pelo menos um dia da semana');return}
