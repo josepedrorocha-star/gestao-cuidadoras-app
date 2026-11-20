@@ -1902,6 +1902,8 @@ function vSaude(p){
   const f=(kk,l,tp,w,ph)=>`<label class="f ${w||''}">${l}<input type="${tp||'text'}" data-sf="${kk}" data-p="${p}" value="${esc(F[kk]||'')}" placeholder="${ph||''}"></label>`;
   const fh=`<p class="small mute" style="margin:0 0 8px">Dados que costumam pedir no hospital, nas urgências e nas consultas. Grava sozinho.</p><div class="fg">
     ${f('nome','Nome completo','text','w')}${f('nasc','Data de nascimento','date')}${f('utente','N.º de utente (SNS)','text','','')}
+    ${f('nif','NIF','text','','ex.: 123456789')}
+    ${f('morada','Morada','text','w','ex.: Rua…, n.º, código postal e localidade')}
     ${f('sangue','Grupo sanguíneo','text','','ex.: A+')}${f('seguro','Seguro de saúde / subsistema','text','','ex.: ADSE')}
     <label class="f w">Alergias (medicamentos, alimentos…)<textarea data-sf="alergias" data-p="${p}" placeholder="ex.: Penicilina — fica com manchas na pele">${esc(F.alergias||'')}</textarea></label>
     ${f('medFamilia','Médico de família','text')}${f('centro','Centro de saúde / USF','text')}
@@ -2269,8 +2271,9 @@ async function pdfSaude(p){
   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('Ficha de saúde',14,y);doc.setFontSize(10);doc.setTextColor(110);doc.setFont('helvetica','normal');doc.text('Atualizada em '+dataPT(hj),W-14,y,{align:'right'});doc.setTextColor(0);
   y+=7;doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text(T(F.nome||PESSOAS_S[p]),14,y);
   y+=5;doc.setFont('helvetica','normal');doc.setFontSize(9);
-  const L1=[F.nasc?'Nascimento: '+dataPT(F.nasc)+' ('+idade(F.nasc)+')':'',F.utente?'N.º utente SNS: '+F.utente:'',F.sangue?'Grupo sanguíneo: '+F.sangue:'',F.seguro?'Seguro: '+F.seguro:''].filter(Boolean).join('   ·   ');
+  const L1=[F.nasc?'Nascimento: '+dataPT(F.nasc)+' ('+idade(F.nasc)+')':'',F.utente?'N.º utente SNS: '+F.utente:'',F.nif?'NIF: '+F.nif:'',F.sangue?'Grupo sanguíneo: '+F.sangue:'',F.seguro?'Seguro: '+F.seguro:''].filter(Boolean).join('   ·   ');
   if(L1){doc.text(T(L1),14,y);y+=4.5}
+  if(F.morada){doc.splitTextToSize(T('Morada: '+F.morada),W-28).forEach(l=>{doc.text(l,14,y);y+=4.5})}
   const L2=[F.medFamilia?'Médico de família: '+F.medFamilia:'',F.centro?'Centro de saúde: '+F.centro:'',F.emerg?'Emergência: '+F.emerg:''].filter(Boolean).join('   ·   ');
   if(L2){doc.splitTextToSize(T(L2),W-28).forEach(l=>{doc.text(l,14,y);y+=4.5})}
   if(F.alergias){y+=1;doc.setFillColor(251,234,230);const ls=doc.splitTextToSize(T('ALERGIAS: '+F.alergias),W-34);doc.roundedRect(14,y-3.5,W-28,ls.length*4.4+3,1.5,1.5,'F');doc.setTextColor(179,64,46);doc.setFont('helvetica','bold');ls.forEach(l=>{doc.text(l,17,y+0.5);y+=4.4});doc.setTextColor(0);doc.setFont('helvetica','normal');y+=2}
