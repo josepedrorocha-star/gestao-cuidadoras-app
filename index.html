@@ -436,6 +436,11 @@ details.s-mais{margin-top:8px}details.s-mais>summary{cursor:pointer;color:var(--
 .anx-b{display:flex;gap:6px;margin-left:auto}
 .anx-barra{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0}.anx-barra span{display:block;height:100%;background:var(--acc)}
 @media (max-width:760px){.anx-b{width:100%}.anx-b .btn{flex:1;justify-content:center}}
+body.a-arrastar [data-anx-alvo]{outline:1px dashed var(--line);outline-offset:2px}
+[data-anx-alvo].anx-sobre{outline:2px dashed var(--acc)!important;outline-offset:2px;background:var(--acc2)!important}
+.anx-zona{margin-top:12px;padding:10px 12px;border:1.5px dashed var(--line);border-radius:10px}
+.anx-zt{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.anx-dica{margin:8px 0 0}
 /* entrada com Google */
 body.sem-sessao #tabs,body.sem-sessao #bnav,body.sem-sessao .mesnav,body.sem-sessao footer{display:none!important}
 .entrada{max-width:420px;margin:48px auto;text-align:center;padding:28px 22px}
@@ -1755,6 +1760,7 @@ function vSaude(p){
   if(!porM.length&&!marcE.length)eh+=`<p class="small mute">Não há exames nem análises por fazer.</p>`;
   if(feitE.length)eh+=`<details class="s-mais"${porM.length||marcE.length?'':' open'}><summary>Feitos (${feitE.length})</summary>${feitE.map(c=>linhaConsulta(p,P,c)).join('')}</details>`;
   eh+=`<div class="bar" style="margin-top:10px"><button class="btn p" data-a="sNovo" data-p="${p}" data-t="consultas" data-g="exame">+ Exame ou análise</button></div>`;
+  if(!isPhone()&&P.consultas.length)eh+=`<p class="small mute anx-dica">📎 Para anexar um PDF ou fotografia, arraste o ficheiro para cima do exame ou da consulta, ou passe o rato por cima e carregue <b>Ctrl+V</b>.</p>`;
   h+=sec('s-'+p+'-exames','🧪 Exames e análises',eh,{extra:`<span class="small mute">${porM.length?porM.length+' por marcar · ':''}${marcE.length} marcado(s)</span>`});
   // MÉDICOS
   let medh=P.medicos.length?P.medicos.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(m=>{
@@ -1798,10 +1804,10 @@ function linhaDoenca(p,P,d){const ms=P.meds.filter(m=>m.doenca===d.id&&medAtivo(
 function linhaConsulta(p,P,c){const m=medicoS(P,c.medico),pm=c.estado==='pormarcar'||!c.data,q=!pm&&(c.estado==='marcada'||!c.estado)?quandoTxt(c.data):'',dz=P.doencas.find(d=>d.id===c.doenca);
   const ped=c.pedido&&P.consultas.find(x=>x.id===c.pedido),filhos=!ehExame(c)?P.consultas.filter(x=>x.pedido===c.id&&ehExame(x)):[];
   const nmC=x=>(TIPO_C[x.tipo]||'Consulta')+(medicoS(P,x.medico)&&medicoS(P,x.medico).especialidade?' de '+medicoS(P,x.medico).especialidade:x.esp?' de '+x.esp:'');
-  return `<div class="s-item${c.estado==='desmarcada'?' antigo':''}"><span class="s-h">${pm?`<b class="small">Por</b><span class="small">marcar</span>`:`<b>${dataPT(c.data).slice(0,5)}</b><span class="small">${DSEM_S[diaSemana(c.data)]}${c.hora?' '+hh(c.hora):''}</span>`}</span>
+  return `<div class="s-item${c.estado==='desmarcada'?' antigo':''}" data-anx-alvo="${p}|${c.id}"><span class="s-h">${pm?`<b class="small">Por</b><span class="small">marcar</span>`:`<b>${dataPT(c.data).slice(0,5)}</b><span class="small">${DSEM_S[diaSemana(c.data)]}${c.hora?' '+hh(c.hora):''}</span>`}</span>
     <div class="s-t"><b>${esc(TIPO_C[c.tipo]||'Consulta')}${m&&m.especialidade?' de '+esc(m.especialidade):c.esp?' de '+esc(c.esp):''}${ehExame(c)&&c.motivo?': '+esc(c.motivo):''}</b>${q?` <span class="tag">${q}</span>`:''}${c.estado&&c.estado!=='marcada'&&c.estado!=='pormarcar'?` <span class="tag off">${EST_C[c.estado]}</span>`:''}
       <div class="small mute">${[m?m.nome:'',c.local||(m&&m.local)||'',dz?'('+dz.nome+')':'',ehExame(c)?'':c.motivo||''].filter(Boolean).map(esc).join(' · ')}</div>${ped?`<div class="small mute">Pedido na ${esc(nmC(ped).toLowerCase())}${ped.data?' de '+dataPT(ped.data):''}</div>`:''}${filhos.length?`<div class="small">🧪 Pediu: ${filhos.map(x=>esc(TIPO_C[x.tipo]||'Exame')+(x.motivo?' ('+esc(x.motivo)+')':'')+(x.estado==='pormarcar'?' — por marcar':x.estado==='feita'?' — feito':x.data?' — '+dataPT(x.data):'')).join('; ')}</div>`:''}${c.notas?`<div class="small">📝 ${esc(c.notas)}</div>`:''}${vAnexos(p,c)}</div>
-    <div class="s-bts"><label class="btn s" title="Anexar PDF ou fotografia">📎 Anexar<input type="file" data-anx data-p="${p}" data-id="${c.id}" accept="application/pdf,image/*" multiple hidden></label>${pm&&c.estado!=='feita'&&c.estado!=='desmarcada'?`<button class="btn s p" data-a="sMarcar" data-p="${p}" data-id="${c.id}">📅 Marcar</button>`:''}${c.estado==='marcada'||(!c.estado&&!pm)||(pm&&ehExame(c)&&c.estado!=='feita'&&c.estado!=='desmarcada')?`<button class="btn s" data-a="sFeita" data-p="${p}" data-id="${c.id}">✓ ${ehExame(c)?'Feito':'Realizada'}</button>`:''}<button class="btn s" data-a="sEditar" data-p="${p}" data-t="consultas" data-id="${c.id}">✎ Editar</button></div></div>`}
+    <div class="s-bts"><label class="btn s" title="Anexar PDF ou fotografia (também pode arrastar o ficheiro para cima, ou colar com Ctrl+V)">📎 Anexar<input type="file" data-anx data-p="${p}" data-id="${c.id}" accept="application/pdf,image/*" multiple hidden></label>${pm&&c.estado!=='feita'&&c.estado!=='desmarcada'?`<button class="btn s p" data-a="sMarcar" data-p="${p}" data-id="${c.id}">📅 Marcar</button>`:''}${c.estado==='marcada'||(!c.estado&&!pm)||(pm&&ehExame(c)&&c.estado!=='feita'&&c.estado!=='desmarcada')?`<button class="btn s" data-a="sFeita" data-p="${p}" data-id="${c.id}">✓ ${ehExame(c)?'Feito':'Realizada'}</button>`:''}<button class="btn s" data-a="sEditar" data-p="${p}" data-t="consultas" data-id="${c.id}">✎ Editar</button></div></div>`}
 
 /* ---------- anexos (PDF e fotografias) nas consultas e exames ----------
    O ficheiro é guardado no Firestore em pedaços (documentos anexos/<id>-0, -1, …), porque cada documento só aceita até 1 MB.
@@ -1810,9 +1816,9 @@ const ANX_MAX=10*1024*1024,ANX_PEDACO=700000,ANX_LIVRE=1024*1024*1024;
 let anxCache={},anxOcupado=false;
 const fmtTam=b=>b>=1048576?(b/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(b/1024))+' KB';
 function todosAnexos(){const L=[];['pai','mae'].forEach(p=>{const P=S.saude&&S.saude[p];if(P&&Array.isArray(P.consultas))P.consultas.forEach(c=>(c.anexos||[]).forEach(a=>L.push({p,c,a})))});return L}
-function vAnexos(p,c){const A=c.anexos||[];if(!A.length)return '';
+function vAnexos(p,c,volta){const A=c.anexos||[];if(!A.length)return '';const vv=volta?' data-volta="1"':'';
   return `<div class="anx-l">${A.map(a=>`<div class="anx"><span class="anx-n" title="${esc(a.nome)}">📎 ${esc(a.nome)}</span><span class="small mute">${fmtTam(a.tam)}</span>
-    <span class="anx-b"><button class="btn s" data-a="anxAbrir" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Abrir</button><button class="btn s" data-a="anxBaixar" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Descarregar</button><button class="btn s d" data-a="anxApagar" data-p="${p}" data-c="${c.id}" data-id="${a.id}" title="Apagar anexo">✕</button></span></div>`).join('')}</div>`}
+    <span class="anx-b"><button class="btn s" data-a="anxAbrir" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Abrir</button><button class="btn s" data-a="anxBaixar" data-p="${p}" data-c="${c.id}" data-id="${a.id}">Descarregar</button><button class="btn s d" data-a="anxApagar" data-p="${p}" data-c="${c.id}" data-id="${a.id}"${vv} title="Apagar anexo">✕</button></span></div>`).join('')}</div>`}
 const lerB64=b=>new Promise((ok,ko)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]||'');r.onerror=()=>ko(r.error);r.readAsDataURL(b)});
 /* fotografias grandes: reduz para no máximo 2000 px e JPEG — ficam legíveis e muito mais leves */
 async function reduzFoto(f){
@@ -1857,7 +1863,7 @@ async function anexar(p,cid,files){
     const c2=SP(p).consultas.find(x=>x.id===cid);
     if(!c2){apagarPartes({id,partes});break}
     (c2.anexos=c2.anexos||[]).push({id,nome:f.name,tipo:f.type||'application/pdf',tam:f.size,partes,em:hojeK(),por:(utilizador&&utilizador.email)||''});
-    anxCache[id]=f;feitos++;save();render();
+    anxCache[id]=f;feitos++;save();render();atualizaZona();
   }
   if(feitos)toast(feitos===1?'Anexo guardado':feitos+' anexos guardados');
   }catch(e){toast('Não foi possível enviar o anexo'+(e&&e.code==='permission-denied'?' (sem permissão)':'')+'. Tente de novo.')}
@@ -1880,7 +1886,7 @@ const AS_ANX={
   anxBaixar:async e=>{const r=achaAnexo(e);if(!r||!r.a)return;if(!anxCache[r.a.id])toast('A preparar…');
     try{baixarBlob(await lerAnexo(r.a),r.a.nome)}catch(err){toast('Não foi possível descarregar o anexo.')}},
   anxApagar:e=>{const r=achaAnexo(e);if(!r||!r.a)return;const {c,a}=r;
-    confirmar(`Apagar o anexo <b>${esc(a.nome)}</b>? Deixa de estar disponível para as duas pessoas.`,()=>{c.anexos=(c.anexos||[]).filter(x=>x.id!==a.id);if(!c.anexos.length)delete c.anexos;apagarPartes(a);save();fechar();render();toast('Anexo apagado')})},
+    const volta=e.dataset.volta;confirmar(`Apagar o anexo <b>${esc(a.nome)}</b>? Deixa de estar disponível para as duas pessoas.`,()=>{c.anexos=(c.anexos||[]).filter(x=>x.id!==a.id);if(!c.anexos.length)delete c.anexos;apagarPartes(a);save();fechar();render();toast('Anexo apagado');if(volta)modalSaude(e.dataset.p,'consultas',c.id)})},
 };
 document.addEventListener('change',e=>{const el=e.target;if(!el.matches||!el.matches('input[type=file][data-anx]')||!el.files.length)return;
   const fs=[...el.files];el.value='';anexar(el.dataset.p,el.dataset.id,fs)});
@@ -1888,6 +1894,38 @@ function vEspacoAnexos(){const L=todosAnexos(),usado=L.reduce((t,x)=>t+x.a.tam,0
   return `<p class="small">${L.length?`<b>${L.length}</b> anexo(s) nas consultas e exames do Pai e da Mãe, com <b>${fmtTam(usado)}</b>.`:'Ainda não há anexos. Anexe PDFs ou fotografias em <b>Consultas e exames</b>, nas abas Pai e Mãe (botão 📎 Anexar).'}</p>
     <div class="anx-barra" title="${pct.toFixed(1).replace('.',',')}% do espaço gratuito"><span style="width:${Math.max(pct,L.length?1:0)}%"></span></div>
     <p class="small mute">Ocupa cerca de ${pct<0.1&&L.length?'menos de 0,1':pct.toFixed(1).replace('.',',')}% do espaço gratuito do Firebase (1 GB). Máximo de 10 MB por ficheiro; fotografias grandes são reduzidas automaticamente.</p>`}
+
+/* ---------- arrastar e colar anexos ---------- */
+function vZona(p,c){return `<div class="anx-zt"><span>📎 <b>Anexos</b></span><label class="btn s">📎 Anexar<input type="file" data-anx data-p="${p}" data-id="${c.id}" accept="application/pdf,image/*" multiple hidden></label></div>
+  ${vAnexos(p,c,1)}<div class="small mute anx-dica">${isPhone()?'Toque em Anexar para escolher um PDF ou tirar uma fotografia.':'Arraste para aqui um PDF ou uma fotografia, ou copie o ficheiro e carregue <b>Ctrl+V</b>.'}</div>`}
+function atualizaZona(){const z=document.getElementById('anxZona');if(!z)return;const [p,id]=z.dataset.anxAlvo.split('|'),c=SP(p).consultas.find(x=>x.id===id);if(c)z.innerHTML=vZona(p,c)}
+const temFicheiros=dt=>!!dt&&[...(dt.types||[])].includes('Files');
+let anxSobre=null,anxRato=null;
+function marcaAlvo(el){if(anxSobre===el)return;if(anxSobre)anxSobre.classList.remove('anx-sobre');anxSobre=el;if(el)el.classList.add('anx-sobre')}
+function fimArrastar(){marcaAlvo(null);document.body.classList.remove('a-arrastar')}
+document.addEventListener('dragover',e=>{if(!temFicheiros(e.dataTransfer))return;e.preventDefault();
+  const alvo=entrada==='ok'&&e.target.closest?e.target.closest('[data-anx-alvo]'):null;
+  e.dataTransfer.dropEffect=alvo?'copy':'none';document.body.classList.add('a-arrastar');marcaAlvo(alvo)});
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget)fimArrastar()});
+document.addEventListener('drop',e=>{if(!temFicheiros(e.dataTransfer))return;e.preventDefault();
+  const alvo=e.target.closest?e.target.closest('[data-anx-alvo]'):null,fs=[...e.dataTransfer.files];fimArrastar();
+  if(!fs.length)return;
+  if(!alvo){toast((tab==='pai'||tab==='mae')?'Largue o ficheiro em cima de uma consulta ou exame.':'Para anexar, abra a aba Pai ou Mãe e largue o ficheiro em cima de uma consulta ou exame.');return}
+  const [p,id]=alvo.dataset.anxAlvo.split('|');anexar(p,id,fs)});
+document.addEventListener('mouseover',e=>{const a=e.target.closest&&e.target.closest('[data-anx-alvo]');if(a)anxRato=a.dataset.anxAlvo});
+document.addEventListener('mouseout',e=>{const a=e.target.closest&&e.target.closest('[data-anx-alvo]');if(a&&!(e.relatedTarget&&a.contains(e.relatedTarget)))anxRato=null});
+document.addEventListener('paste',e=>{
+  const cd=e.clipboardData;if(!cd||entrada!=='ok')return;
+  let fs=[...(cd.files||[])];
+  if(!fs.length&&cd.items)fs=[...cd.items].filter(i=>i.kind==='file').map(i=>i.getAsFile()).filter(Boolean);
+  if(!fs.length)return;                       /* texto normal: deixa colar como sempre */
+  e.preventDefault();
+  const z=document.getElementById('anxZona'),modalAberto=document.getElementById('modal').classList.contains('on');
+  const alvo=(modalAberto&&z)?z.dataset.anxAlvo:(!modalAberto?anxRato:null);
+  if(!alvo){toast((tab==='pai'||tab==='mae')?'Para colar, passe o rato por cima da consulta ou exame e carregue Ctrl+V.':'Para anexar, abra a aba Pai ou Mãe.');return}
+  const [p,id]=alvo.split('|');
+  fs=fs.map((f,i)=>f.name&&f.name!=='image.png'?f:new File([f],'colado-'+hojeK()+(fs.length>1?'-'+(i+1):'')+(/png/.test(f.type)?'.png':/jpe?g/.test(f.type)?'.jpg':/pdf/.test(f.type)?'.pdf':''),{type:f.type}));
+  anexar(p,id,fs)});
 
 /* formulários */
 function camposS(t,P){
@@ -1937,7 +1975,7 @@ function modalSaude(p,t,id,pre){
         <div class="bar" style="margin-top:6px"><button type="button" class="btn s" data-a="sMaisHora">+ Outra hora</button>${MOMENTOS.map(([x,n])=>`<button type="button" class="btn s" data-a="sMaisHora" data-h="${x}">${n} ${hh(x)}</button>`).join('')}</div></div>`}
     return `${lab}<input type="${c.t||'text'}" data-ff="${c.k}" value="${esc(val)}" placeholder="${esc(c.ph||'')}">${c.dica?`<span class="small mute" style="font-weight:400">${c.dica}</span>`:''}</label>`}).join('');
   abrir(`<h3>${it?'Editar':'Novo'} ${titS(t,v)} — ${esc(nomeS(p)||PESSOAS_S[p])}</h3>
-    <div class="fg" style="margin-top:10px" id="sForm">${campos}</div>
+    <div class="fg" style="margin-top:10px" id="sForm">${campos}</div>${t==='consultas'?(it?`<div class="anx-zona" id="anxZona" data-anx-alvo="${p}|${it.id}">${vZona(p,it)}</div>`:`<p class="small mute" style="margin-top:10px">📎 Depois de guardar, pode anexar PDFs ou fotografias.</p>`):''}
     <div class="bar" style="justify-content:space-between;margin-top:14px">${it?`<button class="btn d" data-a="sApagar">✕ Apagar</button>`:'<span></span>'}<span class="bar"><button class="btn" data-a="fechar">Cancelar</button><button class="btn p" data-a="sGuardar">Guardar</button></span></div>`);
   condS();const n=document.querySelector('#sForm [data-ff="nome"],#sForm [data-ff="valor"]');if(n&&!it)setTimeout(()=>n.focus(),50);
 }
