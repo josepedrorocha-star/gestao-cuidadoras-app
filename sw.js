@@ -1,6 +1,6 @@
 /* Gestão de Cuidadoras — service worker.
    Guarda a app no aparelho para abrir depressa. Os DADOS não passam por aqui: vão sempre para o Firebase. */
-const VERSAO = 'gc-2026-11-20f';
+const VERSAO = 'gc-2026-11-20g';
 const BASE = ['./', './index.html', './firebase-config.js', './manifest.webmanifest',
   './icones/icone-192.png', './icones/icone-512.png', './icones/apple-touch-icon.png'];
 const EXTERNOS = ['https://www.gstatic.com/firebasejs/', 'https://cdnjs.cloudflare.com/ajax/libs/'];
